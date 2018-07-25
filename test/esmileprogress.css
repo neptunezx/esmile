@@ -1,0 +1,39 @@
+.esmile-progress {
+    position: absolute;
+    top:30%;
+    text-align: center;
+    font-family: 'Lato', Calibri, Arial, sans-serif;
+    font-weight: 200;
+    font-size: 10em;
+    line-height: 1em;
+    color: rgba(0,0,0,0.4);
+    width: 100%;
+    white-space: pre;
+}
+
+/*
+.esmile-progress.progress {
+    visibility: visible;
+}
+
+.esmile-progress::after {
+    position: relative;
+    width: 100%;
+    color: rgba(0,0,0,0.1);
+    content: "0%\A 10%\A 22%\A 36%\A 48%\A 53%\A 64%\A 71%\A 83%\A 100%\A";
+    white-space: pre;
+}
+
+.esmile-progress.progress::after {
+    -webkit-animation: counter 6s steps(10);
+    animation: counter 6s steps(10);
+}
+
+@keyframes counter {
+    0% { top: 0; }
+    100% { top: -10em; opacity: 0;}
+}
+@-webkit-keyframes counter {
+    0% { top: 0; }
+    100% { top: -10em; opacity: 0;}
+}*/

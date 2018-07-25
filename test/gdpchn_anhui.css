@@ -1,0 +1,100 @@
+#head{
+    height:80px;
+    width:100%;
+    margin: 0 auto;
+    border: 0;
+}
+
+#logo{
+    height:80px;
+    width:150px;
+    position: relative;
+    float: left;
+    margin: 0 auto;
+    font-size: 15px;
+    color: orange;
+    font-family: "Times New Roman";
+}
+
+#title{
+    height:80px;
+    width:200px;
+    position: relative;
+    float: left;
+    margin-left: 100px;
+    border: 0;
+    font-size: 15px;
+}
+
+#title h1{
+    color: deepskyblue;
+    font-family: "Times New Roman";
+}
+
+#chart{
+    height:100%;
+    width:400px;;
+    position: fixed;
+    left:200px;
+}
+
+#chart_{
+    height:100%;
+    width:400px;;
+    position: fixed;
+    right: 20px;
+}
+
+#gdp{
+     position:fixed;
+     height:225px;
+     width:175px;
+     left:10px;
+     top:120px;
+     text-align:left;
+     color:deepskyblue;
+    font-family: "Times New Roman";
+ }
+ 
+#gdp h2{
+     margin-left: 20px;
+     text-align:left;
+     color:powderblue;
+     font-family: "Times New Roman";
+ }
+ 
+#gdp-pp{
+    position:fixed;
+    height:225px;
+    width:175px;
+    right:450px;
+    top:120px;
+    text-align:left;
+    color:deepskyblue;
+    font-family: "Times New Roman";
+}
+
+#gdp-pp h2{
+     margin-left: 20px;
+     text-align:left;
+     color:powderblue;
+     font-family: "Times New Roman";
+ }
+
+#gdp-else{
+    position:fixed;
+    top: 120px;
+    right:10px;
+    height:460px;
+    width:280px;
+    margin-right: 10px;
+    text-align:left;
+    color:deepskyblue;
+    font-family: "Times New Roman";
+}
+
+#gdp-else h2{
+    text-align:left;
+    color:powderblue;
+    font-family: "Times New Roman";
+}

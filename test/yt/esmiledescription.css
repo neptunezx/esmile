@@ -1,0 +1,70 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2014-12-24, 9:59:16
+    Author     : LENOVO
+*/
+
+
+/**
+ * for horizontal
+*/
+.esmile-description {
+    position:absolute; 
+    right: 5px;
+    top: 0px;
+    background: rgba(0,0,0,0.4); 
+    width:120px;
+    height:18px;
+    color: rgba(255,255,255,1); 
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    font-family: Calibri;
+    font-size: 13px;
+    z-index:1;
+    cursor: pointer;
+    text-align:center;
+}
+
+/**
+ * for vertical
+ *
+.esmile-description{
+    position:absolute;
+    right: -45px;
+    bottom: 55px;
+    background: rgba(0,0,0,0.4);
+    width:120px;
+    height: 20px;
+    color: rgba(255,255,255,1);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    font-family: Calibri;
+    font-size: 14px;
+    z-index:1;
+    -webkit-transform: rotate(-90deg);
+}
+*/
+
+.esmile-description-content{
+    position: absolute;
+    width:200px;
+    height: 500px;
+   /* color: rgb(200,200,200);*/
+/*    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;*/
+    right: -5px;
+    text-align: left;
+    font-family: "Lucida Grande", Verdana;
+    font-weight: 300;
+    font-size: 1.05em;
+   
+    background: rgba(0,0,30,0.6);
+    padding-top: 10px;
+    top: 0px;
+    padding: 20px;
+}

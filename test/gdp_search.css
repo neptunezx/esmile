@@ -1,0 +1,55 @@
+body {
+    color:#eee;
+    font-family:'Cabin Condensed', sans-serif;
+    font-size:11px;
+    text-align:center;
+    margin: 0px;
+    overflow: hidden;
+    background-color:#112769;
+}
+
+#_head{
+    height:80px;
+    width:100%;
+    margin: 0 auto;
+    border: 0;
+}
+
+#_logo{
+    height:85px;
+    width:100%;
+    position: relative;
+    float: left;
+    margin: 0 auto;
+    font-size: 15px;
+    color: orange;
+    font-family: "Times New Roman";
+    background-color: #11264f;
+}
+
+#search{
+    height:30px;
+    width:100%;
+    position: relative;
+    float: left;
+    margin: 0 auto;
+    font-size: 20px;
+    color: deepskyblue;
+    font-family: "Times New Roman";
+}
+
+#list{
+    height:100%;
+    width:50%;
+    position: relative;
+    float: left;
+    margin: 0 auto;
+    margin-left: 50px;
+    font-size: 20px;
+    color: deepskyblue;
+    font-family: "Times New Roman";
+}
+
+#list ul li{
+    color:deepskyblue;
+}

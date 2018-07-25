@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ESmile data visualization</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>
+            <script>
+               var chartOption = {
+                   title: {
+                       text: "ESmile Data Visulization";
+                       subText: "by ESmile 2014";
+                       link: "http://www.ehualu.com",
+                       sublink: "http://www.ehualu.com/ESmile/DataVisulization";
+                       linkHoverColor:
+                       sublinkHoverColor:
+                       position:{
+                          x:"center",
+                          y:"top"
+                          width:
+                          height:
+                       };
+                       enableDividingLine: false;
+                       enableLink: false;
+                       visible: false;
+                       textColor: 0x00ff00;
+                       subTextColor: 0xff0000;
+                       dividingLineColor:"#fff";
+                       backgroundColor: 0x000000;
+                       opacity: 0.9;
+                       textFont:
+                       textFontSize:
+                       textFontColor:
+                       subTextFont:
+                       subTextFontSize:
+                       subTextFontColor:
+                   };
+                   credits:{
+                       enabled:true
+                       position:{
+                          x: "left",
+                          y: "bottom"
+                          width:
+                          height:
+                       }
+                       link:"http://www.ehualu.com/ESmile/DataVisulization",
+                       linkHoverColor:
+                   };
+                   description: {
+                      content: "We worked on some visuals that were presented"
+                              + "during ehualu data visulization research. " 
+                              + "This visualization shows some China province" 
+                              + "data from 2008 to 2014 for the goverment. we" 
+                              + "can see the defference between the chart change";
+                      backgroundColor:0xADADAD;
+                      borderColor:0xADADAD
+                      opacity: 0.9;
+                      font:
+                      fontSize:
+                      fontColor:
+                      position:{
+                          x: "left",
+                          y: "bottom"
+                          width:
+                          height:
+                       }
+                       visible: false;
+                   }
+                            
+                   legend:{
+                       position:{
+                          x:"left",
+                          y:"bottom",
+                          width:
+                          height:
+                       };
+                       orientation: "vertical";
+                       label:["Population", "GDP", "Area"];
+                       labelColor: 0x0000ff;
+                       backgroundColor: 0x000000;
+                       opacity: 0.9;
+                       onselected: function(params){
+                           console.log(params.selectedIndex);
+                       };
+                   };
+                   timeline:{
+                       label: ["China-2008", "China-2009", "ESmile-2010", "ESmile-2011",
+                               "China-2012", "China-2013", "ESmile-2014"],
+                       timeslice: [{ label:"", labelColor: ; labelFont: ; labelFontSize: ;labelHoverColor: ;barColor: ;barHoverColor: ;}, 
+                                   { label:"", labelColor: ;labelHoverColor: ;barColor: ;barHoverColor: ;},
+                                           ...
+                                   { label:"", labelColor: ;labelHoverColor: ;barColor: ;barHoverColor: ;}];
+                       position:{
+                          x:"center",
+                          y:"bottom",
+                          width:
+                          height:
+                       }; 
+                       orientation: "vertical";
+                       formater: fucntion(label) {
+                           return label.slice(0, 4);
+                       }
+                       onselected: function(params){
+                            chart.setTitle({ text:"params.selectedIndex.label"})
+                       }
+                       onplaying: function(params){
+                          // do something by user
+                       }
+                   };
+                   series:{ 
+                       type:"TimeSeries",
+                       value:[ 
+                           { type:"CategorySeries"
+                             label:"2008",
+                             value:[
+                                 {
+                                     type:"SpaceSeries",
+                                     label:"--人口"
+                                     value:[
+                                        { name:"安庆", amount:20},
+                                        { name:"芜湖", amount:30},
+                                        { name:"马鞍山", amount:50},
+                                        { name:"合肥", amount:70},
+                                        { name:"淮北", amount:70},
+                                        { name:"铜陵", amount:10},
+                                        { name:"滁州", amount:20},
+                                        { name:"六安", amount:20},
+                                        { name:"淮南", amount:20},
+                                        { name:"巢湖", amount:20},
+                                        { name:"济南", amount:20}
+                                     ]
+                                     
+                                 },
+                                 {
+                                     type:"SpaceSeries",
+                                     label:"--GDP"
+                                     value:[
+                                        { name:"安庆", amount:20},
+                                        { name:"芜湖", amount:30},
+                                        { name:"马鞍山", amount:50},
+                                        { name:"合肥", amount:70},
+                                        { name:"淮北", amount:70},
+                                        { name:"铜陵", amount:10},
+                                        { name:"滁州", amount:20},
+                                        { name:"六安", amount:20},
+                                        { name:"淮南", amount:20},
+                                        { name:"巢湖", amount:20},
+                                        { name:"济南", amount:20}
+                                     ]
+                                 },
+                                 {
+                                     type:"SpaceSeries",
+                                     label:"--面积"
+                                     value:[
+                                        { name:"安庆", amount:20},
+                                        { name:"芜湖", amount:30},
+                                        { name:"马鞍山", amount:50},
+                                        { name:"合肥", amount:70},
+                                        { name:"淮北", amount:70},
+                                        { name:"铜陵", amount:10},
+                                        { name:"滁州", amount:20},
+                                        { name:"六安", amount:20},
+                                        { name:"淮南", amount:20},
+                                        { name:"巢湖", amount:20},
+                                        { name:"济南", amount:20}
+                                     ]
+                                 } 
+                             ]
+                           },
+                           { 
+                             type:"CategorySeries"
+                             label:"2009",
+                             value:[] 
+                            },
+                           { 
+                             type:"CategorySeries"
+                             label:"2010",
+                             value:[] 
+                            },
+                           { 
+                             type:"CategorySeries"
+                             label:"2011",
+                             value:[] 
+                            },
+                           { 
+                             type:"CategorySeries"
+                             label:"2012",
+                             value:[] 
+                            },
+                           { 
+                             type:"CategorySeries"
+                             label:"2013",
+                             value:[] 
+                            },
+                           { 
+                             type:"CategorySeries"
+                             label:"2014",
+                             value:[] 
+                           },
+                       ]
+                       
+                   }
+                   
+                   backgroundColor: 0xADADAD;
+                   backgroundImage: "http://www.ehualu.com/ESmile/source/resource/chart/bluesky.png";
+                   viewport: [1028 768];
+                   visible: true;
+                   borderColor: 0xADADAD;
+                   opacity: 0.9;
+               }
+            </script> 
+
+        </div>
+    </body>
+</html>

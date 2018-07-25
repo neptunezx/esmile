@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - custom attributes [lines]</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            color: #ffffff;
+            font-family:Monospace;
+            font-size:13px;
+            text-align:center;
+            font-weight: bold;
+
+            background-color: #000000;
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        #title {
+            position: absolute;
+            top:5%;
+            width: 95%;
+            LINE-HEIGHT: 100%;
+            FONT-FAMILY: 华文行楷;
+            color:white;
+            FONT-SIZE: 20pt;
+            z-index:100;
+        }
+
+        #info {
+            color: #FF0000;
+            background-color: #ADD8E6;
+            position: absolute;
+            FONT-SIZE: 12pt;
+            top: 0%;
+        //bottom: 0%;
+            width: 20%;
+            right:0%;
+            height: 100%;
+        //FONT-FAMILY: 华文行楷;
+            padding: 5px;
+            z-index:100;
+            word-break:break-all;
+        //opacity: 0.8;
+        }
+
+        #fucbar {
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            width:100px
+            //padding: 8px;
+            color: #fff;
+        //background-color: #555;
+            opacity: 0.7;
+            font-size: 40px;
+            font-weight: normal;
+        }
+
+        .button1 {
+            background-color: #AAAAAA;
+            width:80px;
+            text-align:center;
+            cursor: pointer;
+        }
+
+        #select {
+            position: fixed;
+            top: 80px;
+            left: 50px;
+            width:100px
+            //padding: 8px;
+            color: #fff;
+            background-color: #555;
+            opacity: 0.7;
+            font-size: 20px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        #tmpdiv {
+            color: #FF3333;
+            position: absolute;
+            top: 20%;
+            width: 80%;
+            right:0px;
+            padding: 5px;
+            z-index:200;
+        }
+
+
+    </style>
+    <script language="javascript">
+        function appfuc(optionvalue){
+
+            switch(optionvalue)
+            {
+                case "1":
+                    document.getElementById("maintest").innerHTML='人口分布图：本图展示了自2001年~2014年的全国人口分布状况。';
+                    document.getElementById("linkmap").href = "examples/scenezx.html";
+                    object1.material.map = texture1;
+                    break;
+                case "2":
+                    document.getElementById("maintest").innerHTML='人口密度图：本图展示了自2001年~2014年的全国人口密度分布状况。';
+                    document.getElementById("linkmap").href = "examples/distributionMap.html";
+                    object1.material.map = texture2;
+                    break;
+                case "3":
+                    document.getElementById("maintest").innerHTML='人口流量图：本图展示了自2001年~2014年的全国各省份进人口流动状况。进出口哦！高大上！';
+                    document.getElementById("linkmap").href = "examples/scenegjj.html";
+                    object1.material.map = texture3;
+                    break;
+                case "4":
+                    document.getElementById("maintest").innerHTML='交通流量图：本图展示了自2001年~2014年的全国交通流量状况。';
+                    document.getElementById("linkmap").href = "examples/transitFlow.html";
+                    object1.material.map = texture4;
+                    break;
+                case "5":
+                    document.getElementById("maintest").innerHTML='XX图：本图展示了自2001年~2014年的全国XX分布状况。';
+                    break;
+                case "6":
+                    document.getElementById("maintest").innerHTML='XX图：本图展示了自2001年~2014年的全国XX分布状况。';
+                    break;
+                default:
+                    document.getElementById("maintest").innerHTML='XX图：本图展示了自2001年~2014年的全国XX分布状况。';
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+<!--div id="title"><a href="http://threejs.org" target="_blank">three.js</a> - custom attributes example</div-->
+<div id="container"></div>
+<div id="fucbar">
+    <button type="button" class="button1" onclick="window.location.href='portal.html'">HOME</button>
+</div>
+
+<!--div id="selectdiv" -->
+<select id="select" onchange="appfuc(this.value);">
+    <option value="1">人口分布图</option>
+    <option value="2">人口密度图</option>
+    <option value="3">人口流量图</option>
+    <option value="4">交通流量图</option>
+    <option value="5">XX图</option>
+    <option value="6">XX图</option>
+</select>
+<div id="title">示例图</div>
+<div id="info">
+    <h style="font-size:20pt;">简介：</h>
+    <!--p>人口分布图：本图展示了自2001年~2014年的<br></br>全国人口分布状况。</p-->
+    <p id="maintest" style="align:right ; text-indent:2em ; LINE-HEIGHT:30px ;">人口分布图：本图展示了自2001年~2014年的全国人口分布状况。</p>
+    <!--p><a id="linkmap" href="http://threejs.org" target="_blank">detail</a>-详细信息点这里</p-->
+    <p><a id="linkmap" href="examples/scenezx.html" target="_blank">detail</a>-详细信息点这里</p>
+</div>
+
+
+<script src="threejs/lib/three.min.js"></script>
+<script src="threejs/projects/js/Detector.js"></script>
+<script src="threejs/projects/js/libs/stats.min.js"></script>
+<script src="threejs/projects/fonts/helvetiker_bold.typeface.js"></script>
+
+<script type="x-shader/x-vertex" id="vertexshader">
+
+			uniform float amplitude;
+
+			attribute vec3 displacement;
+			attribute vec3 customColor;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vec3 newPosition = position + amplitude * displacement;
+
+				vColor = customColor;
+
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+
+			}
+
+		</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform vec3 color;
+			uniform float opacity;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				gl_FragColor = vec4( vColor * color, opacity );
+
+			}
+
+		</script>
+
+
+<script>
+
+if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+var renderer, scene, camera, stats;
+var object, uniforms, attributes,texture1,texture2,texture3,texture4;
+var imginesrc = "img/qq1.jpg";
+
+var WIDTH = window.innerWidth,
+        HEIGHT = window.innerHeight;
+
+init();
+animate();
+
+function init() {
+
+    camera = new THREE.PerspectiveCamera( 30, WIDTH / HEIGHT, 1, 10000 );
+    camera.position.z = 400;
+    camera.position.y = 30;
+    camera.position.x = 10;
+
+    scene = new THREE.Scene();
+
+    attributes = {
+
+        displacement: {	type: 'v3', value: [] },
+        customColor: {	type: 'c', value: [] }
+
+    };
+
+    uniforms = {
+
+        amplitude: { type: "f", value: 5.0 },
+        opacity:   { type: "f", value: 0.3 },
+        color:     { type: "c", value: new THREE.Color( 0xff0000 ) }
+
+    };
+
+    var shaderMaterial = new THREE.ShaderMaterial( {
+
+        uniforms:       uniforms,
+        attributes:     attributes,
+        vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+        blending:       THREE.AdditiveBlending,
+        depthTest:      false,
+        transparent:    true
+
+    });
+
+    //展台(圆柱)
+    /*geometry = new THREE.CylinderGeometry( 120, 120, 5, 40 );
+    object = new THREE.Mesh( geometry, shaderMaterial );
+
+    scene.add( object );*/
+
+    //展板（平面1）
+
+    // object1 start
+    geometry1 = new THREE.PlaneGeometry(1500, 1500 , 32, 32)
+
+    texture1 = THREE.ImageUtils.loadTexture(imginesrc);
+    texture2 = THREE.ImageUtils.loadTexture("img/density.png");
+    texture3 = THREE.ImageUtils.loadTexture("img/flow4.jpg");
+    texture4 = THREE.ImageUtils.loadTexture("img/flow.png");
+
+    //texture1.wrapS = THREE.RepeatWrapping;
+    //texture1.wrapT = THREE.RepeatWrapping;
+    //texture.repeat.set( 4, 4 );
+    var material = new THREE.MeshBasicMaterial({ map: texture1 });
+
+
+    object1 = new THREE.Mesh(geometry1, material);
+    object1.translateZ(-3000);
+    object1.translateY(240);
+    object1.translateX(-100);
+    object1.rotation.x = 100;
+    //object1.material.needsUpdate = true;
+    scene.add( object1 );
+    // object1 end
+
+    //展台处理
+    /*var vertices = object.geometry.vertices;
+
+    var displacement = attributes.displacement.value;
+    var color = attributes.customColor.value;
+
+    for( var v = 0; v < vertices.length; v ++ ) {
+
+        displacement[ v ] = new THREE.Vector3();
+
+        color[ v ] = new THREE.Color( 0xffffff );
+        color[ v ].setHSL( v / vertices.length, 0.5, 0.5 );
+
+    }
+
+    object.rotation.x = 0.2;*/
+    //
+
+
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setClearColor( 0x050505, 1 );
+    renderer.setSize( WIDTH, HEIGHT );
+
+    var container = document.getElementById( 'container' );
+    container.appendChild( renderer.domElement );
+
+
+    function listener1()
+    {
+        alert('pppppppp');
+    }
+    var eventobject = new THREE.EventDispatcher();
+
+    eventobject.addEventListener ( 'click', function(){alert("iiiiiiiiiiiiiii");});
+
+    eventobject.apply(object1);
+
+
+
+    window.addEventListener( 'resize', onWindowResize, false );
+
+}
+
+function onWindowResize() {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
+
+function animate() {
+    requestAnimationFrame( animate );
+    render();
+}
+
+function render() {
+
+    var time = Date.now() * 0.001;
+
+    //object.rotation.y = 0.25 * time;
+    object1.translateY(  Math.sin( time ) );
+
+
+
+    uniforms.amplitude.value = 0.5 * Math.sin( 0.5 * time );
+    uniforms.color.value.offsetHSL( 0.0005, 0, 0 );
+
+    var nx, ny, nz, value;
+
+    for( var i = 0, il = attributes.displacement.value.length; i < il; i ++ ) {
+
+        nx = 0.3 * ( 0.5 - Math.random() );
+        ny = 0.3 * ( 0.5 - Math.random() );
+        nz = 0.3 * ( 0.5 - Math.random() );
+
+        value = attributes.displacement.value[ i ];
+
+        value.x += nx;
+        value.y += ny;
+        value.z += nz;
+
+    }
+
+    attributes.displacement.needsUpdate = true;
+
+
+    renderer.render( scene, camera );
+
+}
+
+
+</script>
+
+</body>
+
+</html>

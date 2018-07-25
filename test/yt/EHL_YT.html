@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{
+            background-color:#000000;
+            overflow-x: hidden;
+            margin:0px;
+            padding:0px;
+        }
+        #chart{
+            height:100%;
+            width:100%;;
+            position: absolute;
+            overflow:hidden;
+        }
+        h3{
+            margin: 0px 2px 10px;
+        }
+        h6{
+            margin: 2px;
+        }
+        .textcss{
+            font-size: 12px;
+        }
+        .esmile-description-content{
+            height:500px;
+        }
+        .Yt_flag{
+            width:20px;
+            height:10px;
+            margin:6px 4px 0px 0px;
+            float:left;
+        }
+    </style>
+</head>
+<body>
+<div id="chart">
+
+
+</div>
+<script src="three.min.js"></script>
+<script src="../../source/ESmile.js"></script>
+<script src="../../source/utils/IdGenerator.js"></script>
+<script src="../../source/core/Event.js"></script>
+<script src="../../source/core/EventDispatcher.js"></script>
+<script src="../../source/core/Base.js"></script>
+<script src="../../source/charts/Chart.js"></script>
+<script src="../../source/utils/GeoJsonLoader.js"></script>
+<script src="../../source/charts/DistributionMapChart.js"></script>
+<script src="../../source/utils/Environment.js"></script>
+<script src="../../source/charts/EventCenter.js"></script>
+<script src="../../source/components/Component.js"></script>
+
+<script src="../../source/graphics/GraphicObject.js"></script>
+<script src="../../source/components/Legend.js"></script>
+<script src="../../library/three.js/examples/js/loaders/DDSLoader.js"></script>
+<script src="../../library/three.js/examples/js/loaders/MTLLoader.js"></script>
+<script src="../../library/three.js/examples/js/loaders/OBJMTLLoader.js"></script>
+<script src="../../library/three.js/examples/js/controls/OrbitControls.js"></script>
+<script src="../../source/charts/ModelChart.js"></script>
+<script src="../../source/graphics/Model.js"></script>
+
+<script src="../../source/components/Description.js"></script>
+<script src="../../source/components/Legend.js"></script>
+<script src="jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="esmiledescription.css">
+<link rel="stylesheet" type="text/css" href="../main.css">
+<script>
+ var options = {
+     models:[{
+         name:"自助售货终端",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/test4.js",
+         position:[-3,-3,5.5],
+         text:"<div class='textcss'><h3>自助售货终端</h3>&nbsp;&nbsp;&nbsp;&nbsp;自动售货机（Vending Machine，VEM）是能根据投入的钱币自动付货的机器。"
+         +"自动售货机是商业自动化的常用设备，它不受时间、地点的限制，能节省人力、方便交易。是一种全新的商业零售形式，又被称为24小时营业的微型超市。"
+         +"能分为三种：饮料自动售货机、食品自动售货机、综合自动售货机。</div>"
+     },{
+         name:"电子政务机",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/dzzwj/dzzwj.js",
+         position:[2.2,-3,-0.5],
+         text:"<div class='textcss'><h3>电子政务自助机</h3>&nbsp;&nbsp;&nbsp;&nbsp;基于最新的云计算技术和理念，以平台化的方式，包含了服务器、防火墙、存储设备、智能终端等设备，"
+         +"并通过友好的人机交互、强大的数据整合技术，为市民提供轻松便捷的一站式服务，能够有效提高市民对政务服务的满意度。<br><br>通过一次部署，即可轻松实现以下功能："
+         +"<br>1) 政务预约、办理、查询等全流程自助服务<br>2) 自助证件影像<br>3) 银联静脉指纹支付功能<br>4) 政务服务助手<br><br>优点：<br>有效地降低管理成本"
+         +"<br>减轻政府部门开发费用<br>对服务和资源进行高效、合理的整合与分配<br>提升硬件利用率，降低能耗和设施成本<br>简化业务流程，减少人工干预</div>"
+     },{
+         name:"银行自动存取款机",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/yhqkj/yhqkj.js",
+         position:[0,-3,-3.5],
+         text:"<div class='textcss'><h3>银行自动存取款机</h3>&nbsp;&nbsp;&nbsp;&nbsp;自动存取款机是一种客户进行自助服务的电子化设备，它具有存款、取款、卡卡转账、查询余额、修改密码等功能，是一种新型的银行电脑终端。只能存一百的。"
+         +"<br><br>服务特色<br>1、自助存取款机24小时昼夜服务。<br>2、自助存取款机自助操作，方便快捷。</div>"
+     },{
+         name:"广告牌",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/ggp/ggp.js",
+         position:[0,-3,-2.5],
+         scale:4.55,
+         text:"<div class='textcss'><h3>广告牌</h3>&nbsp;&nbsp;&nbsp;&nbsp;用于广告或宣传。</div>"
+     },{
+         name:"储物柜",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/cwg/cwg.js",
+         position:[0,-3,-2.5],
+         scale:4.55,
+         text:"<div class='textcss'><h3>电子智能物流寄存柜</h3>&nbsp;&nbsp;&nbsp;&nbsp;电子智能物流寄存柜采用邮包寄递系统和中间件技术，将电子商务网站（或快递业务系统）与实体寄存柜无缝集成，为物流配送最后1公里提供一种低成本的解决方案，是电子商务企业拓展线下销售渠道的有力工具。"
+         +"采用工业级嵌入式系统平台，结合物联网技术、信息技术、高级加密技术及云计算技术，提供独立安全的第三方物流自助服务平台，为消费者提供了一种便利的取件方式；为物流企业提高了生产力，使快递员的工作变得简单，快捷；为单位物业规范了快递程序，避免了快递对工作学习的打扰。"
+         +"电子寄存柜控制终端是一台带有触摸屏、扫描枪等外设的ARM主机或其他工控主机，安装WinCE嵌入式操作系统或Windows XP操作系统和电子寄存柜控制程序，控制终端主要负责对电子寄存柜的控制和日常管理，包括对电子寄存柜的状态检测、应急开箱、清理开箱、订单(用户、物品)信息的下载、存取身份和物品的验证、物品存取状态的回传。"
+         +"控制终端提供可视化图形界面，在电子寄存柜日常管理时，每个箱盒的状态一目了然。控制终端可选配扫描枪、读卡器或条码打印机等。</div>"
+     },{
+         name:"华录高清加油站1",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/zzytj/zzytj2.js",
+         position:[-2,-3,4.5],
+         scale:0.8,
+         text:"<div class='textcss'><h3>华录高清加油站</h3>&nbsp;&nbsp;&nbsp;&nbsp;华录高清加油站是数字出版物基于半导体存储数字的发行和服务。消费者只要通过华录智慧卡可以在加油站复制视频音频内容，这个内容低至1块钱。</div>"
+     },{
+         name:"华录高清加油站2",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/zzytj/zzytj2.js",
+         position:[-2,-3,7.5],
+         scale:0.8,
+         text:"<div class='textcss'><h3>华录高清加油站</h3>&nbsp;&nbsp;&nbsp;&nbsp;华录高清加油站是数字出版物基于半导体存储数字的发行和服务。消费者只要通过华录智慧卡可以在加油站复制视频音频内容，这个内容低至1块钱。</div>"
+     },{
+         name:"多媒体机1",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/zzytj/zzytj3.js",
+         position:[2,-3,4.5],
+         scale:5,
+         text:"<div class='textcss'><h3>多媒体触控一体机</h3><h6>积分·礼券</h6>平安万里通&nbsp;&nbsp;平安车检礼券&nbsp;&nbsp;中国电信&nbsp;&nbsp;智买道&nbsp;&nbsp;员工福利&nbsp;&nbsp;浦发银行&nbsp;&nbsp;捷兑通&nbsp;&nbsp;中国银联&nbsp;&nbsp;都市旅游卡"
+                 +"<h6>充值</h6>手机充值&nbsp;&nbsp;支付宝充值&nbsp;&nbsp;都市旅游卡充值&nbsp;&nbsp;非接卡充值&nbsp;&nbsp;票务vip卡&nbsp;&nbsp;"
+                 +"<h6>金融·保险</h6>信用卡申请&nbsp;&nbsp;刷卡特惠&nbsp;&nbsp;银行卡账户查询&nbsp;&nbsp;转账汇款&nbsp;&nbsp;小额贷款&nbsp;&nbsp;线下支付"
+                 +"<h6>电影·票务</h6>电影&nbsp;&nbsp;演唱会&nbsp;&nbsp;话剧歌剧&nbsp;&nbsp;舞蹈芭蕾&nbsp;&nbsp;电子票务&nbsp;&nbsp;儿童亲子&nbsp;&nbsp;音乐会&nbsp;&nbsp;赛事展览"
+                 +"<h6>缴费·还款</h6>水电煤交费&nbsp;&nbsp;通信账单交费&nbsp;&nbsp;信用卡还款&nbsp;&nbsp;交通违章"
+                 +"<h6>游戏点卡</h6>腾讯&nbsp;&nbsp;完美时空&nbsp;&nbsp;网易&nbsp;&nbsp;搜狐&nbsp;&nbsp;久游"
+                 +"<h6>彩票</h6>福利彩票&nbsp;&nbsp;体育彩票&nbsp;&nbsp;竞彩&nbsp;&nbsp;足彩&nbsp;&nbsp;"
+                 +"<h6>旅游</h6>机票&nbsp;&nbsp;租车&nbsp;&nbsp;火车票&nbsp;&nbsp;景区门票&nbsp;&nbsp;自由行&nbsp;&nbsp;主题游&nbsp;&nbsp;出境游"
+                 +"<h6>商城·生活</h6>手机回收&nbsp;&nbsp;智能机配件&nbsp;&nbsp;联通商城&nbsp;&nbsp;优惠券&nbsp;&nbsp;宠物用品&nbsp;&nbsp;锅德火锅&nbsp;&nbsp;长城宽带</div>"
+     },{
+         name:"多媒体机2",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/zzytj/zzytj3.js",
+         position:[2,-3,7.5],
+         scale:5,
+         text:"<div class='textcss'><h3>多媒体触控一体机</h3><h6>积分·礼券</h6>平安万里通&nbsp;&nbsp;平安车检礼券&nbsp;&nbsp;中国电信&nbsp;&nbsp;智买道&nbsp;&nbsp;员工福利&nbsp;&nbsp;浦发银行&nbsp;&nbsp;捷兑通&nbsp;&nbsp;中国银联&nbsp;&nbsp;都市旅游卡"
+                 +"<h6>充值</h6>手机充值&nbsp;&nbsp;支付宝充值&nbsp;&nbsp;都市旅游卡充值&nbsp;&nbsp;非接卡充值&nbsp;&nbsp;票务vip卡&nbsp;&nbsp;"
+                 +"<h6>金融·保险</h6>信用卡申请&nbsp;&nbsp;刷卡特惠&nbsp;&nbsp;银行卡账户查询&nbsp;&nbsp;转账汇款&nbsp;&nbsp;小额贷款&nbsp;&nbsp;线下支付"
+                 +"<h6>电影·票务</h6>电影&nbsp;&nbsp;演唱会&nbsp;&nbsp;话剧歌剧&nbsp;&nbsp;舞蹈芭蕾&nbsp;&nbsp;电子票务&nbsp;&nbsp;儿童亲子&nbsp;&nbsp;音乐会&nbsp;&nbsp;赛事展览"
+                 +"<h6>缴费·还款</h6>水电煤交费&nbsp;&nbsp;通信账单交费&nbsp;&nbsp;信用卡还款&nbsp;&nbsp;交通违章"
+                 +"<h6>游戏点卡</h6>腾讯&nbsp;&nbsp;完美时空&nbsp;&nbsp;网易&nbsp;&nbsp;搜狐&nbsp;&nbsp;久游"
+                 +"<h6>彩票</h6>福利彩票&nbsp;&nbsp;体育彩票&nbsp;&nbsp;竞彩&nbsp;&nbsp;足彩&nbsp;&nbsp;"
+                 +"<h6>旅游</h6>机票&nbsp;&nbsp;租车&nbsp;&nbsp;火车票&nbsp;&nbsp;景区门票&nbsp;&nbsp;自由行&nbsp;&nbsp;主题游&nbsp;&nbsp;出境游"
+                 +"<h6>商城·生活</h6>手机回收&nbsp;&nbsp;智能机配件&nbsp;&nbsp;联通商城&nbsp;&nbsp;优惠券&nbsp;&nbsp;宠物用品&nbsp;&nbsp;锅德火锅&nbsp;&nbsp;长城宽带</div>"
+     },{
+         name:"框架",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/jg/jg1.js",
+         scale:3,
+         position:[0,-3,0],
+         text:""
+     },{
+         name:"屋顶",
+         loader:new THREE.JSONLoader(),
+         style: "js",
+         json : "model/floor/floor.js",
+         position:[0,1.5,0],
+         scale:3
+     }],
+     description: {
+     content: "<div class='textcss'><h3>云亭</h3>&nbsp;&nbsp;&nbsp;&nbsp;以“公众”为中心,涉及到市民的衣食住行，如政务信息、公共服务信息、旅游导游信息等各类信息的查询。信息亭还包含了电子商务平台功能，围绕市民的日常需求开展网上或信息亭在线订购、"
+         +"在线支付等服务，市民可在信息亭上完成电费、水费、煤气费、电话费等各类费用的查询、交纳，汽车、火车、飞机票的购买等。此外信息亭还将开设可视电话业务，今后市民可在信息亭上与各类公共服务单位、商家进行可视电话沟通。其主要出发点就是让市民真正享受到信息技术给他们带来的便利。</div>",
+             style : {
+         fontColor:"#fff",
+                 backgroundColor:"#334"
+     }
+
+ }
+ };
+ var chart = new ESmile.ModelChart(document.getElementById("chart"), options);
+ chart.setBackgroundColor(0xeeeeee);
+ document.body.style.background = '#eeeeee';
+ chart.render();
+</script>
+<div style="position: absolute;right:130px;">
+    <img src="sxt1.png" style="width:35px;height:30px;cursor: pointer;" onclick="document.getElementById('vedio').style.visibility='visible';window.open('video.html?load=monitor.mov','testLoad');">
+</div>
+    <div id="vedio"style="width:100%;height:100%;padding:20px;visibility:hidden;z-index:10;">
+        <div style="position: relative;margin:20px auto;background:#000000;height:420px; width:740px;z-index:10;">
+            <img src="close.png" style="width:25px;height:25px;cursor: pointer;float:right;z-index:10;" onclick="document.getElementById('vedio').style.visibility='hidden';">
+            <iframe name="testLoad" style="width:100%;height:100%" marginwidth="0"
+                    marginheight="0" hspace="0" vspace="0" frameborder="0" scrolling="no"></iframe>
+        </div>
+    </div>
+</body>
+</html>

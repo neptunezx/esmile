@@ -1,0 +1,48 @@
+.ESmile_tooltip{
+    position:absolute;
+    float:right;
+    z-index: 1;
+}
+.ESmile_canvas{
+    z-index: 0;
+    position: absolute;
+    top:0px;
+    right:0px
+}
+.ESmile_Legend{
+    z-index: 1;
+    position: absolute;
+    overflow: auto;
+}
+.ESmile_Legend_div{
+    float:left;
+    margin:0px 3px;
+    height:20px;
+    
+}
+.ESmile_Legend_div:hover {
+
+    color: #ff001b;
+    opacity: 0.8;
+}
+
+.ESmile_Legend_div a:hover {
+
+    color: #ff001b;
+    opacity: 0.8;
+}
+
+.ESmile_Legend_flag{
+    width:20px;
+    height:10px;
+    margin:3px;
+    float:left;
+}
+.ESmile_Legend_title{
+    margin:1px 3px 0px;
+    float:left;
+    font-size: 12px;
+   /* font-family: 'Lato', Calibri, Arial, sans-serif;*/
+    color:#222;
+}
+

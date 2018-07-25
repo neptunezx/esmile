@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="timeline.css">
+        <script src="../source/three.min.js"></script>
+        <script src="../source/OrbitControls.js"></script>
+        <script src="../source/ESmile.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="main.css">
+        <link rel="stylesheet" type="text/css" href="car.css">
+        <style>
+            #chart1{
+                height:95%;
+                width: 90%;;
+                position: absolute;
+                padding: 2px;
+                border: 1px solid #999;
+                margin:10px;
+                top:1%;
+                left: 4%;
+            }
+            #chart2{
+                height:95%;
+                width:90%;;
+                position: absolute;
+                padding: 2px;
+                border: 1px solid #999;
+                margin:10px;
+                top: 100%;
+                left: 4%;
+                 
+            }
+        </style>
+</head>
+    <body>
+
+ 
+<div id ="chart1" ></div>  
+<div id ="chart2" ></div> 
+<script>
+            var cities;
+            data = [
+                {name: 'China', amount: Math.round(Math.random() * 30.0)}, 
+                {name: 'India', amount: Math.round(Math.random() * 20)}, 
+                {name: 'Pakistan', amount: Math.round(Math.random() * 25)}, 
+                {name: 'Afghanistan', amount: Math.round(Math.random() * 25)}, 
+                {name: 'Kazakhstan', amount: Math.round(Math.random() * 25)},
+                {name: 'Uzbekistan', amount: Math.round(Math.random() * 40.0)},
+                {name: 'Myanmar', amount: Math.round(Math.random() * 30)}, 
+                {name: 'Thailand', amount: Math.round(Math.random() * 35)}, 
+                {name: 'Indonesia', amount: Math.round(Math.random() * 25)}, 
+                {name: 'Malaysia', amount: Math.round(Math.random() * 35)},
+                {name: 'Philippines', amount: Math.round(Math.random() * 40.0)},  
+                {name: 'Japan', amount: Math.round(Math.random() * 25)},
+                {name: 'SaudiArabia', amount: Math.round(Math.random() * 35)}, 
+                {name: 'Iran', amount: Math.round(Math.random() * 35)},
+                {name: 'Turkey', amount: Math.round(Math.random() * 25)},
+                {name: 'Iraq', amount: Math.round(Math.random() * 35)}, 
+                {name: 'Syria', amount: Math.round(Math.random() * 14)}, 
+                {name: 'Turkmenistan', amount: Math.round(Math.random() * 25)}, 
+                {name: 'Mongonia', amount: Math.round(Math.random() * 35)},
+                {name: 'North Korea', amount: Math.round(Math.random() * 14.0)},
+                {name: 'Russia', amount: Math.round(Math.random() * 4.0)}
+            ];
+
+        var options = {
+                title: {
+                       title: "Asia Countries District Map",
+                       subtitle: "ESmile 2014 Data Visulization ",
+                    
+                       sublink: "http://www.ehualu.com/ESmile/DataVisulization",
+                       style : {
+                           titleColor: "#222",
+                           subtitleColor:"#222",
+                           guideLineColor:"#222"
+                       }
+                      
+                },
+                timeline: {
+                    labels:["Asia-2008", "Asia-2009", "Asia-2010", "Asia-2011",
+                               "Asia-2012", "Asia-2013", "Asia-2014"],
+                     style: {
+                         labelColor: "#000",
+                         labelRotate: "15deg",
+                         labelTranslate: "(0, 15px)",
+                         labelFontSize: "0.7em",
+                         markerBeginColor: "#0e0",
+                         markerEndColor:"#00e"
+                                 
+                     },
+                     onselected: function(param){
+                         console.log("paramaaaaa");
+                     }
+                },
+                description: {
+                      content: "We worked on some visuals that were presented"
+                              + "during ehualu data visulization research. " 
+                              + "This visualization shows some China province" 
+                              + "data from 2008 to 2014 for the goverment. we" 
+                              + "can see the defference between the chart change",
+                      style : {
+                        fontColor:"#fff",
+                        backgroundColor:"#334"
+                      }
+                     
+                },
+                credit: { 
+                    copyright:"ESmile Data Visulization", 
+                    author:"ehualu.com Visulization Work Group",
+                    style: {
+                        textColor: "#000",
+                        color: "#00f"
+                    }
+                },
+                map: {
+                    type: "asia",
+                    data: data,
+                    style: {
+                        backgroundColor: "#AAAAAD",
+                        //selectedColor:"#7B7B7B",
+                        forwardColor:"#BEBEED"
+                    }
+                },
+                
+            };
+            var chart;
+            chart = new ESmile.DistrictMapChart(document.getElementById("chart1"), options);
+            chart.setBackgroundColor(0xf3f3f3);
+            document.body.style.background = '#e3e3e3';
+            chart.render();
+
+        </script>
+<script>
+            var cities;
+            data = [
+                {id: 'bei_jing', amount: Math.round(Math.random() * 4.0)}, {id: 'tian_jin', amount: Math.round(Math.random() * 4)}, {id: 'shang_hai', amount: Math.round(Math.random() * 4)}, {id: 'chong_qing', amount: Math.round(Math.random() * 4)}, {id: 'he_bei', amount: Math.round(Math.random() * 4)},
+                {id: 'nei_meng_gu', amount: Math.round(Math.random() * 4.0)}, {id: 'yun_nan', amount: Math.round(Math.random() * 4)}, {id: 'liao_ning', amount: Math.round(Math.random() * 4)}, {id: 'jiang_su', amount: Math.round(Math.random() * 4)}, {id: 'zhe_jiang', amount: Math.round(Math.random() * 4)},
+                {id: 'jiang_xi', amount: Math.round(Math.random() * 4.0)},   {id: 'guang_xi', amount: Math.round(Math.random() * 4)}, {id: 'fu_jian', amount: Math.round(Math.random() * 4)}, {id: 'gui_zhou', amount: Math.round(Math.random() * 4)},
+                {id: 'nei_meng_gu', amount: Math.round(Math.random() * 4.0)}, {id: 'shan_xi', amount: Math.round(Math.random() * 4)}, {id: 'ji_ling', amount: Math.round(Math.random() * 4)}, {id: 'si_chuan', amount: Math.round(Math.random() * 4)}, {id: 'lin_xia', amount: Math.round(Math.random() * 4)},
+                {id: 'guang_dong', amount: Math.round(Math.random() * 4.0)}, {id: 'qi_hai', amount: Math.round(Math.random() * 4)}, {id: 'xi_zang', amount: Math.round(Math.random() * 4)}, {id: 'hei_long_jiang', amount: Math.round(Math.random() * 4)}, {id: 'hu_nan', amount: Math.round(Math.random() * 4)},
+                {id: 'hai_nan', amount: Math.round(Math.random() * 4.0)}, {id: 'tai_wan', amount: Math.round(Math.random() * 4)}, {id: 'xiang_gang', amount: Math.round(Math.random() * 4)},
+                {id: 'xin_jiang', amount: Math.round(Math.random() * 4.0)}, {id: 'qing_hai', amount: Math.round(Math.random() * 4)}, {id: 'xiang_gang', amount: Math.round(Math.random() * 4)}
+            ];
+
+        var options = {
+                title: {
+                       title: "中国经济指数分布图",
+                       subtitle: "ESmile 2014 数据可视化",
+                    
+                       sublink: "http://www.ehualu.com/ESmile/DataVisulization",
+//                       style : {
+//                           titleColor: "#222",
+//                           subtitleColor:"#222",
+//                           guideLineColor:"#222"
+//                       }
+                      
+                },
+                timeline: {
+                    labels:["China-2008", "China-2009", "China-2010", "China-2011",
+                               "China-2012", "China-2013", "China-2014"],
+//                     style : {
+//                         labelColor: "#000",
+//                         labelRotate: "15deg",
+//                         labelTranslate: "(0, 15px)",
+//                         labelFontSize: "0.7em",
+//                         markerBeginColor: "#0e0",
+//                         markerEndColor:"#00e"
+//                                 
+//                     }
+                },
+//                description: {
+//                      content: "We worked on some visuals that were presented"
+//                              + "during ehualu data visulization research. " 
+//                              + "This visualization shows some China province" 
+//                              + "data from 2008 to 2014 for the goverment. we" 
+//                              + "can see the defference between the chart change",
+//                      style : {
+//                        fontColor:"#fff",
+//                        backgroundColor:"#334"
+//                      }
+//                     
+//                },
+                credit: { 
+                    copyright:"ESmile数据可视化", 
+                    author:"易华录可视化工作组",
+                    style: {
+                        textColor: "#ddd",
+                        color: "#99e"
+                    }
+                },
+                map: {
+                    type: "CHN/china",
+                    data: data,
+                    style: {
+                        backgroundColor: "#AAAAAD",
+                        //selectedColor:"#7B7B7B",
+                        forwardColor:"#BEBEED"
+                    }
+                },
+                
+            };
+            var chart;
+            chart = new ESmile.DistrictMapChart(document.getElementById("chart2"), options);
+            chart.setBackgroundColor(0x11264f);
+            document.body.style.background = '#e3e3e3';
+            chart.render();
+
+// setTimeout(function(){
+//    chart.setOptions({ map: {
+//            type: "CHN/an_hui",
+//            data: data2
+//        }
+//    });
+//     console.log(chart._scene);
+// }, 8000)
+
+        </script>
+<!--div id="tool-bar">
+            <div id="select-car">
+                <ul id="nav">
+                    <li class="top"><a>背景</a>
+                        <ul class="car">
+                            <li onclick="chart.setBackgroundColor(0x000000);
+                                document.body.style.background = '#e3e3e3';"><a>黑色</a></li>
+                            <li onclick="chart.setBackgroundColor(0xfafafa);
+                                document.body.style.background = '#e3e3e3';"><a>白色</a></li>
+                            <li onclick="chart.setBackgroundColor(0x63a3ff);
+                                document.body.style.background = '#e3e3e3';"><a>天蓝色</a></li>
+                            <li onclick="chart.setBackgroundColor(0x11264f);
+                                document.body.style.background = '#e3e3e3';"><a>海蓝色</a></li>
+                            <li onclick="chart.setBackgroundColor(0xf300f3);
+                                document.body.style.background = '#e3e3e3';"><a>青蓝色</a></li>
+                            <li onclick="chart.setBackgroundColor(0x33A1C9);
+                                document.body.style.background = '#e3e3e3';"><a>2008年</a></li>
+                            <li onclick="chart.setBackgroundColor(0x446688);
+                                document.body.style.background = '#e3e3e3';"><a>2009年</a></li>
+                            <li onclick="chart.setBackgroundColor(0x33A1C9);
+                            document.body.style.background = '#e3e3e3';"><a>橘色</a></li>
+                        </ul>
+                    </li>
+
+
+            <li class="top"><a>作者</a>
+                <ul class="credits">
+                    <p>Made by <a onMouseUp="javascript:void window.open('http://www.plus360degrees.com/');return false;">Plus360degrees</a>: Follow us on <a onMouseUp="javascript:void window.open('http://www.facebook.com/pages/Plus-360-Degrees/143631622326945');return false;">Facebook</a> or <a onMouseUp="javascript:void window.open('https://twitter.com/#!/plus360degrees');return false;">Twitter</a> for future updates! <br>Delia Otetea: 3D Modeler, Graphic Designer, User Experience Designer. <br><a onMouseUp="javascript:void window.open('http://www.thefloatingwall.com/');return false;">Ivan Moreno</a>: Interactive-Games Developer, Graphic Designer, User Experience Designer. <br><br>Powered by <a onMouseUp="javascript:void window.open('https://github.com/mrdoob/three.js/');return false;">Three.js</a>. Many thanks to Mr.Doob, Alteredqualia and all the contributors for the great work on the engine.<br><br>This application is not for commercial purposes for the cars and brands displayed in it. The design of the cars and<br> logos are exclusively of the brands presented in this application and NO modifications were made by the author of  <br>the application.List of cars displayed: <a class="cars-link" onMouseUp="javascript:void window.open('http://www.ferrari.com/english/gt_sport%20cars/currentrange/ferraricalifornia/Pages/California.aspx');return false;">Ferrari - California</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www5.mercedes-benz.com/en/');return false;">Mercedes Benz</a> - McLaren SLR. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.mitsubishicars.com/MMNA/jsp/evo/12/showroom/overview.do?flash=overview#/?page=overviewSplash');return false;">Mitsubishi - </a><br>Lancer Evolution X. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.mazdausa.com/MusaWeb/displayPage.action?pageParameter=modelsMain&vehicleCode=M3S#/home');return false;"></a>Mazda - 3. <br><a class="cars-link" onMouseUp="javascript:void window.open('http://www.chevrolet.com/camaro-performance-cars/');return false;">Chevrolet - Camaro</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.nissanusa.com/');return false;">Nissan</a> - 350Z. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.astonmartin.com/cars/v8-vantage-coupe');return false;">Aston Martin - V8 Vantage</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.audi.com/com/brand/en/models/a3/s3.html');return false;">Audi - S3</a>. <br><br>The soundtrack is composed and mixed by <a onMouseUp="javascript:void window.open('http://incompetech.com/');return false;">Kevin McLeod</a>. List of songs in order of appearance: Dark Times. Second<br> Coming. Mechanolith. Prelude and Action. Death of Kings. Sudden Defeat. Dangerous. Faceoff. Hero Down. <br><br>Keep in touch! more cars to come!</p>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div-->
+ 
+
+</body>
+</html>

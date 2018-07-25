@@ -1,0 +1,237 @@
+<html lang="en"><head>
+	<title>Texture from Canvas (Three.js)</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+
+    <script src="../source/three.min.js"></script>
+    <script src="../source/OrbitControls.js"></script>
+ 
+
+<div id="ThreeJS" style="position: absolute; left:0px; top:0px"> </div>
+ 
+     <script>
+/*
+	Three.js "tutorials by example"
+	Author: Lee Stemkoski
+	Date: July 2013 (three.js v59dev)
+*/
+
+// MAIN
+
+// standard global variables
+var container, scene, camera, renderer, controls, stats;
+ 
+// custom global variables
+var cube;
+
+init();
+animate();
+
+// FUNCTIONS 		
+function init() 
+{
+	// SCENE
+	scene = new THREE.Scene();
+	// CAMERA
+	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	scene.add(camera);
+	camera.position.set(200,150,400);
+	camera.lookAt(scene.position);	
+	// RENDERER
+ 
+	renderer = new THREE.WebGLRenderer( {antialias:true} );
+	 
+	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	container = document.getElementById( 'ThreeJS' );
+	container.appendChild( renderer.domElement );
+	// EVENTS
+	 
+	// CONTROLS
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+ 
+	 
+	// LIGHT
+	var light = new THREE.PointLight(0xffffff);
+	light.position.set(0,250,0);
+	scene.add(light);
+	 
+	// SKYBOX/FOG
+	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+         scene.add(skyBox);
+ 
+	
+	////////////
+	// CUSTOM //
+	////////////
+	
+	/////// draw canvas /////////
+
+	// create a canvas element
+	var canvas1 = document.createElement('canvas');
+        canvas1.width = 1200;
+        canvas1.height = 1200;
+        
+	var context1 = canvas1.getContext('2d');
+        context1.globalAlpha = 0.9;   //这里采用简单算法布置透明      
+        
+	//context1.font = "Bold 40px Arial";
+	context1.fillStyle = "rgba(255,0,0, 0.6)";
+        canvas1.style.opacity = 0.5;
+        canvas1.style.backgroundColor = "black";
+        //  context1.fillText('Hello, world!', 0, 50);
+        var path1 =[[[-90.095555,13.735338],[-90.608624,13.909771],[-91.23241,13.927832],[-91.689747,14.126218],[-92.22775,14.538829],[-92.20323,14.830103],[-92.087216,15.064585],[-92.229249,15.251447],[-91.74796,16.066565],[-90.464473,16.069562],[-90.438867,16.41011],[-90.600847,16.470778],[-90.711822,16.687483],[-91.08167,16.918477],[-91.453921,17.252177],[-91.002269,17.254658],[-91.00152,17.817595],[-90.067934,17.819326],[-89.14308,17.808319],[-89.150806,17.015577],[-89.229122,15.886938],[-88.930613,15.887273],[-88.604586,15.70638],[-88.518364,15.855389],[-88.225023,15.727722],[-88.68068,15.346247],[-89.154811,15.066419],[-89.22522,14.874286],[-89.145535,14.678019],[-89.353326,14.424133],[-89.587343,14.362586],[-89.534219,14.244816],[-89.721934,14.134228],[-90.064678,13.88197],[-90.095555,13.735338]]];
+        var path2 = [[[16.979667,48.123497],[16.903754,47.714866],[16.340584,47.712902],[16.534268,47.496171],[16.202298,46.852386],[16.011664,46.683611],[15.137092,46.658703],[14.632472,46.431817],[13.806475,46.509306],[12.376485,46.767559],[12.153088,47.115393],[11.164828,46.941579],[11.048556,46.751359],[10.442701,46.893546],[9.932448,46.920728],[9.47997,47.10281],[9.632932,47.347601],[9.594226,47.525058],[9.896068,47.580197],[10.402084,47.302488],[10.544504,47.566399],[11.426414,47.523766],[12.141357,47.703083],[12.62076,47.672388],[12.932627,47.467646],[13.025851,47.637584],[12.884103,48.289146],[13.243357,48.416115],[13.595946,48.877172],[14.338898,48.555305],[14.901447,48.964402],[15.253416,49.039074],[16.029647,48.733899],[16.499283,48.785808],[16.960288,48.596982],[16.879983,48.470013],[16.979667,48.123497]]];
+ 
+//       context1.lineTo((path2[0][0][0]+91.09)/(17+91.8)* canvas1.width , (path2[0][0][1]-13.2)/(49-13.2)*canvas1.height);
+//       for (var i in path2) {
+//            for (var j in path2[i]) {
+//                context1.lineTo((path2[i][j][0]+91.09)/(17+91.8)*canvas1.width, (path2[i][j][1]-13.2)/(49-13.2)*canvas1.height);
+//                }
+//        }
+//         context1.closePath();
+//        context1.moveTo((path1[0][0][0]+91.8)/(17+91.09)*canvas1.width, (path1[0][0][1]-13.2)/(49-13.2)*canvas1.height);
+//        for (var i in path1) {
+//            for (var j in path1[i]) {
+//                 context1.lineTo((path1[i][j][0]+91.09)/(17+91.8)*canvas1.width, (path1[i][j][1]-13.2)/(49-13.2)*canvas1.height);
+//                }
+//        }
+//        document.body.appendChild(canvas1);
+//        context1.fill();
+        ctx = context1;
+        ctx.fillStyle = "grey";
+        ctx.fillRect(0,0, 1200,1200);
+        ctx.beginPath();
+        //设置线条颜色为蓝色
+        ctx.fillStyle = "blue";
+ 
+        //设置路径起点坐标
+        ctx.moveTo(20, 50);
+        //绘制直线线段到坐标点(60, 50)
+        ctx.lineTo(20, 200);
+        //绘制直线线段到坐标点(60, 90)
+        ctx.lineTo(70, 100);
+        //先关闭绘制路径。注意，此时将会使用直线连接当前端点和起始端点。
+        ctx.closePath();
+        //最后，按照绘制路径画出直线
+        ctx.fill();
+
+        ctx.beginPath();
+        //设置线条颜色为蓝色
+        ctx.fillStyle = "red";
+        //设置路径起点坐标
+        ctx.moveTo(220, 150);
+        //绘制直线线段到坐标点(60, 50)
+        ctx.lineTo(320, 100);
+        ctx.lineTo(420, 200);
+        //绘制直线线段到坐标点(60, 90)
+        ctx.lineTo(170, 100);
+        //先关闭绘制路径。注意，此时将会使用直线连接当前端点和起始端点。
+        ctx.closePath();
+        //最后，按照绘制路径画出直线
+        ctx.fill();
+            ctx.beginPath();
+            //设置线条颜色为蓝色
+            ctx.fillStyle = "green";
+            //设置路径起点坐标
+            ctx.moveTo(120, 250);
+            //绘制直线线段到坐标点(60, 50)
+            ctx.lineTo(320, 200);
+            ctx.lineTo(220, 300);
+            //绘制直线线段到坐标点(60, 90)
+            ctx.lineTo(170, 300);
+            //先关闭绘制路径。注意，此时将会使用直线连接当前端点和起始端点。
+            ctx.closePath();
+            //最后，按照绘制路径画出直线
+            ctx.fill();         
+       // document.body.appendChild(canvas1);
+	var texture1 = new THREE.Texture(canvas1, { premultiplyAlpha:true }); 
+	texture1.needsUpdate = true;
+      
+       var material1 = new THREE.MeshBasicMaterial( { map:texture1 ,side:THREE.DoubleSide, color: 0xffffff } );
+       material1.transparent = true;
+
+     geometry = new THREE.SphereGeometry(200, 100, 50);
+     geometry.computeTangents();
+     var mesh1 = new THREE.Mesh(
+        //  new THREE.PlaneGeometry(canvas1.width, canvas1.height),
+        geometry,
+        material1
+      );
+	mesh1.position.set(0,50,0);
+	scene.add( mesh1 );
+        setTimeout(function(){
+            
+            ctx.beginPath();
+            //设置线条颜色为蓝色
+            ctx.fillStyle = "yellow";
+            //设置路径起点坐标
+            ctx.moveTo(120, 250);
+            //绘制直线线段到坐标点(60, 50)
+            ctx.lineTo(320, 200);
+            ctx.lineTo(220, 300);
+            //绘制直线线段到坐标点(60, 90)
+            ctx.lineTo(170, 300);
+            //先关闭绘制路径。注意，此时将会使用直线连接当前端点和起始端点。
+            ctx.closePath();
+            //最后，按照绘制路径画出直线
+            ctx.fill();
+         //    material1.map = texture1;
+             texture1.needsUpdate = true;
+           
+             
+        },4000);
+}
+
+function animate() 
+{
+    requestAnimationFrame( animate );
+    render();			 
+}
+
+function drawImageCanvas(){
+    /////// draw image on canvas /////////
+
+	// create a canvas element
+	var canvas2 = document.createElement('canvas');
+	var context2 = canvas2.getContext('2d');
+	// canvas contents will be used for a texture
+	var texture2 = new THREE.Texture(canvas2);
+	
+	// load an image
+	var imageObj = new Image();
+	imageObj.src = "img/particleA.png";
+	// after the image is loaded, this function executes
+	imageObj.onload = function()
+	{  
+		context2.drawImage(imageObj, 0, 0);
+		if ( texture2 ) // checks if texture exists
+			texture2.needsUpdate = true;
+	};  
+      
+    var material2 = new THREE.MeshBasicMaterial( {map: texture2, side:THREE.DoubleSide} );
+    material2.transparent = true;
+
+    var mesh2 = new THREE.Mesh(
+        new THREE.PlaneGeometry(canvas2.width, canvas2.height),
+        material2
+      );
+	mesh2.position.set(0,50,-50);
+	//scene.add( mesh2 );	
+}
+
+function render() 
+{
+	renderer.render( scene, camera );
+}
+
+</script>
+
+ </body>
+</html>

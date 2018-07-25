@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="css/timeline.css">
+        <script src="../../source/three.min.js"></script>
+        <script src="../../source/OrbitControls.js"></script>
+        <script src="../../source/ESmile.js"></script>
+        <script src="../../source/utils/IdGenerator.js"></script>
+        <script src="../../source/core/Event.js"></script>
+        <script src="../../source/core/EventDispatcher.js"></script>
+        <script src="../../source/charts/Chart.js"></script>
+        <script src="../../source/utils/GeoJsonLoader.js"></script>
+        <script src="../../source/charts/DistrictMapChart.js"></script>
+        <script src="../../source/utils/Environment.js"></script>
+        <script src="../../source/charts/EventCenter.js"></script>
+        <script src="../../source/components/Component.js"></script>
+        <script src="../../source/graphics/GraphicObject.js"></script>
+        <script src="../../source/utils/StaticText.js"></script>
+        <script src="../../source/graphics/SphereCluster.js"></script>
+        <script src="../../source/utils/Text.js"></script>
+        <script src="../../source/utils/SpriteText.js"></script>
+        <script src="../../source/components/ToolBox.js"></script>
+        <script src="../../source/components/ToolTip.js"></script>
+        <script src="../../source/components/Legend.js"></script>
+        <script src="../../source/graphics/Title.js"></script>
+        <script src="../../source/graphics/Shape.js"></script>
+        <script src="../../source/graphics/PolygonColumn.js"></script>
+        <script src="../../source/graphics/DistrictMap.js"></script>
+        <script src="../../source/utils/Utils.js"></script>
+        <script src="../../source/utils/Normalizer.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="stylesheet" type="text/css" href="css/car.css">
+        <style>
+            #chart{
+                height:600px;
+                width:1400px;
+                position: relative;
+            }
+        </style>
+
+<div id ="chart">
+             <header>ESmile District Map</header>
+          <nav id="timeline">
+            <ul>
+                <li class="loaded "><div class="marker" style="background-color: rgb(161, 176, 197);"></div><div class="menu-text">1880 - 1884</div></li><li class="loaded">
+                    <div class="marker" style="background-color: rgb(148, 166, 197);"></div><div class="menu-text">1890 - 1894</div></li><li class="loaded">
+                    <div class="marker" style="background-color: rgb(157, 173, 195);"></div><div class="menu-text">1900 - 1904</div></li><li class="loaded selected"><div class="marker" style="background-color: rgb(152, 169, 195);"></div><div class="menu-text">1910 - 1914</div></li><li class="loaded"><div class="marker" style="background-color: rgb(172, 182, 195);"></div><div class="menu-text">1920 - 1924</div></li><li class="loaded"><div class="marker" style="background-color: rgb(186, 187, 179);"></div><div class="menu-text">1930 - 1934</div></li><li class="loaded"><div class="marker" style="background-color: rgb(211, 202, 169);"></div><div class="menu-text">1940 - 1944</div></li><li class="loaded"><div class="marker" style="background-color: rgb(202, 201, 189);"></div><div class="menu-text">1950 - 1954</div></li><li class="loaded"><div class="marker" style="background-color: rgb(205, 209, 202);"></div><div class="menu-text">1960 - 1964</div></li><li class="loaded"><div class="marker" style="background-color: rgb(209, 208, 188);"></div><div class="menu-text">1970 - 1974</div></li><li class="loaded"><div class="marker" style="background-color: rgb(220, 210, 149);"></div><div class="menu-text">1980 - 1984</div></li><li class="loaded"><div class="marker" style="background-color: rgb(215, 200, 132);"></div><div class="menu-text">1990 - 1994</div></li><li class="loaded"><div class="marker" style="background-color: rgb(217, 181, 92);"></div><div class="menu-text">2000 - 2004</div></li></ul>
+        </nav>
+</div>        
+        <script>
+            var cities;
+            data = [
+                {name: 'china', amount: Math.round(Math.random() * 40.0), color: 0x00ff00}, {id: 'tian_jin', amount: Math.round(Math.random() * 4)}, {id: 'shang_hai', amount: Math.round(Math.random() * 4)}, {id: 'chong_qing', amount: Math.round(Math.random() * 4)}, {id: 'he_bei', amount: Math.round(Math.random() * 4)},
+                {name: 'Iran', amount: Math.round(Math.random() * 40.0)}, {id: 'yun_nan', amount: Math.round(Math.random() * 4)}, {id: 'liao_ning', amount: Math.round(Math.random() * 4)}, {id: 'jiang_su', amount: Math.round(Math.random() * 4)}, {id: 'zhe_jiang', amount: Math.round(Math.random() * 4)},
+                {name: '江西', amount: Math.round(Math.random() * 40.0)}, {id: 'hu_bei', amount: Math.round(Math.random() * 4)}, {id: 'guang_xi', amount: Math.round(Math.random() * 4)}, {id: 'fu_jian', amount: Math.round(Math.random() * 4)}, {id: 'gui_zhou', amount: Math.round(Math.random() * 4)},
+                {id: 'nei_meng_gu', amount: Math.round(Math.random() * 4.0)}, {id: 'shan_xi', amount: Math.round(Math.random() * 4)}, {id: 'ji_ling', amount: Math.round(Math.random() * 4)}, {id: 'si_chuan', amount: Math.round(Math.random() * 4)}, {id: 'lin_xia', amount: Math.round(Math.random() * 4)},
+                {id: 'guang_dong', amount: Math.round(Math.random() * 4.0)}, {id: 'qi_hai', amount: Math.round(Math.random() * 4)}, {id: 'xi_zang', amount: Math.round(Math.random() * 4)}, {id: 'hei_long_jiang', amount: Math.round(Math.random() * 4)}, {id: 'hu_nan', amount: Math.round(Math.random() * 4)},
+                {id: 'hai_nan', amount: Math.round(Math.random() * 4.0)}, {id: 'tai_wan', amount: Math.round(Math.random() * 4)}, {id: 'xiang_gang', amount: Math.round(Math.random() * 4)}
+            ];
+
+        //    data =  [
+        //
+        //        { name:"安庆", amount:20},
+        //        { name:"芜湖市", amount:30},
+        //        { name:"马鞍山市", amount:50},
+        //        { name:"合肥", amount:70},
+        //        { name:"淮北", amount:70},
+        //        { name:"铜陵", amount:10},
+        //        { name:"滁州", amount:20},
+        //        { name:"六安", amount:20},
+        //        { name:"淮南", amount:20},
+        //        { name:"巢湖", amount:20},
+        //        { name:"济南", amount:20}
+        //
+        //    ];
+
+            var chart;
+
+            chart = new ESmile.DistrictMapChart(document.getElementById("chart"), {mapType: "asia", mapData: data});
+            chart.setBackgroundColor(0x11264f);
+            document.body.style.background = '#11264f';
+            chart.render();
+
+
+        </script>
+
+        <div id="tool-bar">
+            <div id="select-car">
+                <ul id="nav">
+                    <li class="top"><a>选择背景</a>
+                        <ul class="car">
+                            <li onclick="chart.setBackgroundColor(0x000000);
+                            document.body.style.background = '#000000';"><a>2004年</a></li>
+                            <li onclick="chart.setBackgroundColor(0xfafafa);
+                            document.body.style.background = '#f3f3f3';"><a>2005年</a></li>
+                            <li onclick="chart.setBackgroundColor(0x63a3ff);
+                            document.body.style.background = '#63a3ff';"><a>2006年</a></li>
+                            <li onclick="chart.setBackgroundColor(0x11264f);
+                            document.body.style.background = '#11264f';"><a>2007年</a></li>
+                            <li onclick="chart.setBackgroundColor(0xf300f3);
+                            document.body.style.background = '#f300f3';"><a>2008年</a></li>
+                            <li onclick="chart.setBackgroundColor(0x446688);
+                            document.body.style.background = '#446688';"><a>2009年</a></li>
+                            <li onclick="chart.setBackgroundColor(0x33A1C9);
+                            document.body.style.background = '#33A1C9';"><a>2010年</a></li>
+                            <li onclick="chart.setBackgroundColor(0xEB8E55);
+                            document.body.style.background = '#EB8E55';"><a>2010年</a></li>
+                        </ul>
+                    </li>
+                    <li class="top"><a>背景色</a>
+                        <ul class="color">
+                            <canvas id="body-picker-canvas"></canvas>
+                        </ul>
+                    </li>
+                    <li class="top"><a>前景色</a>
+                        <ul class="color">
+                            <canvas id="rims-picker-canvas"></canvas>
+                        </ul>
+                    </li>
+
+            <li class="top"><a>作者</a>
+                <ul class="credits">
+                    <p>Made by <a onMouseUp="javascript:void window.open('http://www.plus360degrees.com/');return false;">Plus360degrees</a>: Follow us on <a onMouseUp="javascript:void window.open('http://www.facebook.com/pages/Plus-360-Degrees/143631622326945');return false;">Facebook</a> or <a onMouseUp="javascript:void window.open('https://twitter.com/#!/plus360degrees');return false;">Twitter</a> for future updates! <br>Delia Otetea: 3D Modeler, Graphic Designer, User Experience Designer. <br><a onMouseUp="javascript:void window.open('http://www.thefloatingwall.com/');return false;">Ivan Moreno</a>: Interactive-Games Developer, Graphic Designer, User Experience Designer. <br><br>Powered by <a onMouseUp="javascript:void window.open('https://github.com/mrdoob/three.js/');return false;">Three.js</a>. Many thanks to Mr.Doob, Alteredqualia and all the contributors for the great work on the engine.<br><br>This application is not for commercial purposes for the cars and brands displayed in it. The design of the cars and<br> logos are exclusively of the brands presented in this application and NO modifications were made by the author of  <br>the application.List of cars displayed: <a class="cars-link" onMouseUp="javascript:void window.open('http://www.ferrari.com/english/gt_sport%20cars/currentrange/ferraricalifornia/Pages/California.aspx');return false;">Ferrari - California</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www5.mercedes-benz.com/en/');return false;">Mercedes Benz</a> - McLaren SLR. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.mitsubishicars.com/MMNA/jsp/evo/12/showroom/overview.do?flash=overview#/?page=overviewSplash');return false;">Mitsubishi - </a><br>Lancer Evolution X. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.mazdausa.com/MusaWeb/displayPage.action?pageParameter=modelsMain&vehicleCode=M3S#/home');return false;"></a>Mazda - 3. <br><a class="cars-link" onMouseUp="javascript:void window.open('http://www.chevrolet.com/camaro-performance-cars/');return false;">Chevrolet - Camaro</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.nissanusa.com/');return false;">Nissan</a> - 350Z. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.astonmartin.com/cars/v8-vantage-coupe');return false;">Aston Martin - V8 Vantage</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.audi.com/com/brand/en/models/a3/s3.html');return false;">Audi - S3</a>. <br><br>The soundtrack is composed and mixed by <a onMouseUp="javascript:void window.open('http://incompetech.com/');return false;">Kevin McLeod</a>. List of songs in order of appearance: Dark Times. Second<br> Coming. Mechanolith. Prelude and Action. Death of Kings. Sudden Defeat. Dangerous. Faceoff. Hero Down. <br><br>Keep in touch! more cars to come!</p>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+   /* document.getElementById("testclick").addEventListener("click", function(){console.log("``````")});
+document.getElementById("testclick").addEventListener("click", function(){alert("123456")});
+   document.getElementById("testclick").onclick = function(){alert("xxxxx")};
+
+    var evt = document.createEvent('Event');
+    evt.initEvent("click",true,true);
+  //  document.getElementById("testclick").dispatchEvent(evt);
+
+p = null;
+   p.onlick();
+  var p = new  ESmile.GraphicObject("8888");
+    p.onclick = function(event){
+        console.log("onclick %s:%d", event.type,  this.root.id);
+         *//*event.preventDefault();*//*
+    };
+
+    p.ondragover = function(event){
+        console.log("ondragover %s:%d", event.type,  this.root.id);
+    };
+
+    *//*event.preventDefault();*//*
+
+    console.log(p);
+    var evt = new ESmile.Event("dblclick", 0,0);
+    *//*   p.onclick();*//*
+    p.dispatchEvent(evt);*/
+
+</script>
+</body>
+</html>

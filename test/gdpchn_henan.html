@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="timeline.css">
+    <script src="../source/three.min.js"></script>
+    <script src="../source/OrbitControls.js"></script>
+    <script src="../source/ESmile.js"></script>
+    <script src="../source/utils/IdGenerator.js"></script>
+    <script src="../source/core/Event.js"></script>
+    <script src="../source/core/EventDispatcher.js"></script>
+    <script src="../source/core/Base.js"></script>
+    <script src="../source/charts/Chart.js"></script>
+    <script src="../source/utils/GeoJsonLoader.js"></script>
+    <script src="../source/charts/DistrictMapChart.js"></script>
+    <script src="../source/utils/Environment.js"></script>
+    <script src="../source/charts/EventCenter.js"></script>
+    <script src="../source/components/Component.js"></script>
+    <script src="../source/components/Title.js"></script>
+    <script src="../source/components/Progress.js"></script>
+    <script src="../source/components/Timeline.js"></script>
+    <script src="../source/components/Credit.js"></script>
+    <script src="../source/components/Description.js"></script>
+    <script src="../source/graphics/GraphicObject.js"></script>
+    <script src="../source/utils/StaticText.js"></script>
+    <script src="../source/graphics/SphereCluster.js"></script>
+    <script src="../source/utils/Text.js"></script>
+    <script src="../source/utils/SpriteText.js"></script>
+    <script src="../source/components/ToolBox.js"></script>
+    <script src="../source/components/ToolTip.js"></script>
+    <script src="../source/components/Legend.js"></script>
+    <script src="../source/graphics/Title.js"></script>
+    <script src="../source/graphics/Shape.js"></script>
+    <script src="../source/graphics/PolygonColumn.js"></script>
+    <script src="../source/graphics/DistrictMap.js"></script>
+    <script src="../source/utils/Utils.js"></script>
+    <script src="../source/utils/Normalizer.js"></script>
+    <link rel="stylesheet" type="text/css" href="gdpchn_main.css">
+    <link rel="stylesheet" type="text/css" href="gdpchn_car.css">
+
+    <style type="text/css">
+        body{
+            background-color: #EEEEEE;
+        }
+
+        #chart{
+            height:99%;
+            width:430px;;
+            position: fixed;
+            left:170px;
+            top: 5px;
+        }
+
+        #chart_{
+            height:99%;
+            width:430px;;
+            position: fixed;
+            right: 5px;
+            top: 5px;
+        }
+
+        #gdp{
+            position:fixed;
+            height:225px;
+            width:175px;
+            left:0px;
+            top:20px;
+            text-align:left;
+            color:#000;
+            font-family: "微软雅黑";
+        }
+
+        #gdp ol li{
+            padding-top: 4px;
+        }
+
+        #gdp h2{
+            margin-left: 20px;
+            text-align:left;
+            color:#3A4953;
+            font-family: "微软雅黑";
+        }
+
+        #gdp-pp{
+            position:fixed;
+            height:225px;
+            width:200px;
+            right:420px;
+            top:20px;
+            text-align:left;
+            color:#000;
+            font-family: "微软雅黑";
+        }
+
+        #gdp-pp ol li{
+            padding-top: 4px;
+        }
+
+        #gdp-pp h2{
+            margin-left: 20px;
+            text-align:left;
+            color:#3A4953;
+            font-family: "微软雅黑";
+        }
+    </style>
+</head>
+
+<body>
+<div id="container">
+
+    <div id="chart">
+    </div>
+
+    <div id="chart_">
+    </div>
+
+    <script>
+        var cities;
+        data = [
+            {name: 'china', amount: Math.round(Math.random() * 40.0), color: 0x00ff00}, {id: 'tian_jin', amount: Math.round(Math.random() * 4)}, {id: 'shang_hai', amount: Math.round(Math.random() * 4)}, {id: 'chong_qing', amount: Math.round(Math.random() * 4)}, {id: 'he_bei', amount: Math.round(Math.random() * 4)},
+            {name: 'Iran', amount: Math.round(Math.random() * 40.0)}, {id: 'yun_nan', amount: Math.round(Math.random() * 4)}, {id: 'liao_ning', amount: Math.round(Math.random() * 4)}, {id: 'jiang_su', amount: Math.round(Math.random() * 4)}, {id: 'zhe_jiang', amount: Math.round(Math.random() * 4)},
+            {id: 'jiang_xi', amount: Math.round(Math.random() * 40.0)}, {id: 'hu_bei', amount: Math.round(Math.random() * 4)}, {id: 'guang_xi', amount: Math.round(Math.random() * 4)}, {id: 'fu_jian', amount: Math.round(Math.random() * 4)}, {id: 'gui_zhou', amount: Math.round(Math.random() * 4)},
+            {id: 'nei_meng_gu', amount: Math.round(Math.random() * 4.0)}, {id: 'shan_xi', amount: Math.round(Math.random() * 4)}, {id: 'ji_ling', amount: Math.round(Math.random() * 4)}, {id: 'si_chuan', amount: Math.round(Math.random() * 4)}, {id: 'lin_xia', amount: Math.round(Math.random() * 4)},
+            {id: 'guang_dong', amount: Math.round(Math.random() * 4.0)}, {id: 'qi_hai', amount: Math.round(Math.random() * 4)}, {id: 'xi_zang', amount: Math.round(Math.random() * 4)}, {id: 'hei_long_jiang', amount: Math.round(Math.random() * 4)}, {id: 'hu_nan', amount: Math.round(Math.random() * 4)},
+            {id: 'hai_nan', amount: Math.round(Math.random() * 4.0)}, {id: 'tai_wan', amount: Math.round(Math.random() * 4)}, {id: 'xiang_gang', amount: Math.round(Math.random() * 4)}
+        ];
+
+        var data_color_1 = 0xff6600;
+        var data_color_2 = 0xff6622;
+        var data_color_3 = 0xff6644;
+        var data_color_4 = 0xff6666;
+        var data_color_5 = 0xff6688;
+        var data_color_6 = 0xff66aa;
+        var data_color_7 = 0xff66cc;
+        var data_color_8 = 0xff66ee;
+        var data_color_9 = 0xff6700;
+        var data_color_10 = 0xff6722;
+        var data_color_11 = 0xff6744;
+        var data_color_12 = 0xff6766;
+        var data_color_13 = 0xff6788;
+        var data_color_14 = 0xff67aa;
+        var data_color_15 = 0xff67cc;
+        var data_color_16 = 0xff67ee;
+        var data_color_17 = 0xff6800;
+        var data_color_18 = 0xff6822;
+
+        data_he_nan_gdp =  [
+
+            { name:"郑州", amount:6201.9, color: data_color_1},
+            { name:"洛阳", amount:3136.1, color: data_color_2},
+            { name:"南阳", amount:2500.0, color: data_color_3},
+            { name:"许昌", amount:1903.3, color: data_color_4},
+            { name:"新乡", amount:1766.0, color: data_color_5},
+            { name:"周口", amount:1753.4, color: data_color_6},
+            { name:"焦作", amount:1707.4, color: data_color_7},
+            { name:"安阳", amount:1684.0, color: data_color_8},
+            { name:"平顶山", amount:1556.9, color: data_color_9},
+            { name:"信阳", amount:1535.0, color: data_color_10},
+            { name:"商丘", amount:1604.6, color: data_color_11},
+            { name:"驻马店", amount:1604.6, color: data_color_12},
+            { name:"开封", amount:1604.6, color: data_color_13},
+            { name:"三门峡", amount:1604.6, color: data_color_14},
+            { name:"濮阳", amount:1604.6, color: data_color_15},
+            { name:"漯河", amount:1604.6, color: data_color_16},
+            { name:"鹤壁", amount:1604.6, color: data_color_17},
+            { name:"济源", amount:1604.6, color: data_color_18}
+
+        ];
+        
+        data_he_nan_gdp_pp =  [
+
+            { name:"郑州", amount:70022.58, color: data_color_1},
+            { name:"洛阳", amount:47755.33, color: data_color_2},
+            { name:"南阳", amount:24359.35, color: data_color_3},
+            { name:"许昌", amount:44304.00, color: data_color_4},
+            { name:"新乡", amount:31204.72, color: data_color_5},
+            { name:"周口", amount:19586.68, color: data_color_6},
+            { name:"焦作", amount:48408.28, color: data_color_7},
+            { name:"安阳", amount:33130.04, color: data_color_8},
+            { name:"平顶山", amount:31747.55, color: data_color_9},
+            { name:"信阳", amount:25132.21, color: data_color_10},
+            { name:"商丘", amount:20369.36, color: data_color_11},
+            { name:"驻马店", amount:21145.69, color: data_color_12},
+            { name:"开封", amount:28387.30, color: data_color_13},
+            { name:"三门峡", amount:53770.64, color: data_color_14},
+            { name:"濮阳", amount:31460.67, color: data_color_15},
+            { name:"漯河", amount:33333.33, color: data_color_16},
+            { name:"鹤壁", amount:39377.18, color: data_color_17},
+            { name:"济源", amount:72175.58, color: data_color_18}
+
+        ];
+
+        var options = {
+            map: {
+                type: "CHN/he_nan",
+                data: data_he_nan_gdp,
+                style: {
+                    backgroundColor: "#eeeeee",
+                    //selectedColor:"#7B7B7B",
+                    forwardColor:"#BEBEED"
+                }
+            }
+        };
+        
+        var options_ = {
+            map: {
+                type: "CHN/he_nan",
+                data: data_he_nan_gdp_pp,
+                style: {
+                    backgroundColor: "#eeeeee",
+                    //selectedColor:"#7B7B7B",
+                    forwardColor:"#BEBEED"
+                }
+            }
+        };
+        
+        var chart;
+        chart = new ESmile.DistrictMapChart(document.getElementById("chart"), options);
+        chart.setBackgroundColor(0xf3f3f3);
+        //document.body.style.background = '#11264f';
+        chart.render();
+
+        var chart_;
+        chart_ = new ESmile.DistrictMapChart(document.getElementById("chart_"), options_);
+        chart_.setBackgroundColor(0xf3f3f3);
+        //document.body.style.background = '#11264f';
+        chart_.render();
+    </script>
+
+    <div id="gdp">
+        <h2>河南省2013年</h2>
+        <h2>各市GDP排名：</h2>
+        <ol>
+            <li>郑州市：6101.9亿 RMB</li>
+            <li>洛阳市：3136.1亿 RMB</li>
+            <li>南阳市：2500.0亿 RMB</li>
+            <li>许昌市：1903.3亿 RMB</li>
+            <li>新乡市：1766.0亿 RMB</li>
+            <li>周口市：1753.4亿 RMB</li>
+            <li>焦作市：1707.4亿 RMB</li>
+            <li>安阳市：1684.0亿 RMB</li>
+            <li>平顶山：1556.9亿 RMB</li>
+            <li>信阳市：1535.0亿 RMB</li>
+            <li>商丘市：1500.0亿 RMB</li>
+            <li>驻马店：1498.1亿 RMB</li>
+            <li>开封市：1327.4亿 RMB</li>
+            <li>三门峡：1205.0亿 RMB</li>
+            <li>濮阳市：1120.0亿 RMB</li>
+            <li>漯河市：850.00亿 RMB</li>
+            <li>鹤壁市：622.12亿 RMB</li>
+            <li>济源市：490.00亿 RMB</li>
+        </ol>
+    </div>
+
+    <div id="gdp-pp">
+        <h2>河南省2013年</h2>
+        <h2>各市人均GDP排名：</h2>
+        <ol>
+            <li>济源市：72175.58元 RMB</li>
+            <li>郑州市：70022.58元 RMB</li>
+            <li>三门峡：53770.64元 RMB</li>
+            <li>焦作市：48408.28元 RMB</li>
+            <li>洛阳市：47755.33元 RMB</li>
+            <li>许昌市：44304.00元 RMB</li>
+            <li>鹤壁市：39377.18元 RMB</li>
+            <li>漯河市：33333.33元 RMB</li>
+            <li>安阳市：33130.04元 RMB</li>
+            <li>平顶山：31747.55元 RMB</li>
+            <li>濮阳市：31460.67元 RMB</li>
+            <li>新乡市：31204.72元 RMB</li>
+            <li>开封市：28387.30元 RMB</li>
+            <li>信阳市：25132.21元 RMB</li>
+            <li>南阳市：24359.35元 RMB</li>
+            <li>驻马店：21145.69元 RMB</li>
+            <li>商丘市：20369.36元 RMB</li>
+            <li>周口市：19586.68元 RMB</li>
+        </ol>
+    </div>
+</div>
+</body>
+</html>

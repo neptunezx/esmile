@@ -1,0 +1,54 @@
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>云亭监控视频</title>
+    <style type="text/css">
+        body{font:14px/1.5 "Helvetica Neue",Arial,"Liberation Sans",FreeSans,sans-serif;color:#333;background:black;}
+        video,audio{display:block;}
+        #header .audio{position:absolute;bottom:0;left:650px;}
+        .videos{width:960px;padding:0;margin:0 auto 36px auto;position:relative;height:349px;}
+        .video,.audio{display:block;background:black;}
+        .video{border:0px #333 solid;}.audio{width:300px;}
+
+
+    </style>
+    <!--This line is all you need to enable HTML5 video and audio tags in all major browsers! -->
+    <script src="http://api.html5media.info/1.1.5/html5media.min.js"></script>
+    <script>
+        function init()
+        {
+            var video = document.getElementById("videoContainer");
+            var Request = new Object();
+            Request = GetRequest();
+            var path = Request["load"];
+            console.log(path);
+            var fileURL = "http://10.2.171.114/cloud/images/video/"+path;//document.getElementById("videoFile").value;  // get input field
+            if (fileURL != "")
+            {
+                video.src = fileURL;
+            }
+        }
+        function GetRequest() {
+
+            var url = window.location.search; //获取url中"?"符后的字串
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for(var i = 0; i < strs.length; i ++) {
+                    theRequest[strs[i].split("=")[0]]=(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }
+    </script>
+
+</head>
+<body onload="init()">
+<div id="video">
+
+    <video id="videoContainer" class="video" width="720" height="420" controls="" preload="" loop="loop" autoplay="true" style="margin: 0px auto;">
+        <source media="only screen and (min-device-width: 960px)">
+    </video>
+</div>
+
+</body></html>

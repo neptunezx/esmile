@@ -1,0 +1,4 @@
+web:
+  image: esmile:v1.0
+  ports:
+   - "8080:80"

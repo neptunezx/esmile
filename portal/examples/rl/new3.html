@@ -1,0 +1,382 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - interactive cubes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            color: #fff;
+            font-family:Monospace;
+            font-size:13px;
+            text-align:center;
+            font-weight: bold;
+
+            background-color: #000;
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        #info {
+            color:#fff;
+            position: absolute;
+            top: 0px; width: 100%;
+            padding: 5px;
+
+        }
+    </style>
+</head>
+<body>
+
+<script src="js/three.min.js"></script>
+
+<script src="js/OrbitControls.js"></script>
+<script src="js/loadData.js"></script>
+<script src="js/BinaryLoader.js"></script>
+
+
+<script>
+
+    var container, stats,peoples=[],group,bloader,XYZ=[];
+    var camera, scene, projector, raycaster, renderer,geometry1;
+    var controls,parent,number;
+    var mouse = new THREE.Vector2(), INTERSECTED;
+    var radius = 100, theta = 0;
+    var selectPeople,selectTeams,people_team,selectName;//存放选择对象
+    var filerelations,filepeoples,peopledatas=[],peoples;
+    var total = 0, totaln = 0,loadflag=0;
+    var peoples_mesh=new Object();
+    var colors=["0xffdd44","0xffffff","0xff4422","0xff9955","0xff77dd","0xff7744","0xff5522","0xff9922","0xff99ff"];
+    loadPeoples(function(){
+
+             init();
+             animate();
+    });
+
+
+
+    function init() {
+
+        container = document.createElement( 'div' );
+
+        document.body.appendChild( container );
+
+        selectTeams=peopledatas[GetQueryString("id")];
+        for(var s in selectTeams.relations){
+            if(selectTeams.relations[s].rl=="户主") selectName=selectTeams.relations[s].name;
+            peoples[selectTeams.relations[s].name]=selectTeams.relations[s];
+        }
+
+        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.z = 500;
+        camera.position.y = 200;
+        camera.position.x=0;
+        scene = new THREE.Scene();
+        scene.fog = new THREE.Fog( 0xcce0ff, 50000, 100000 );
+        var ambient = new THREE.AmbientLight( 0x666666 );
+
+        parent = new THREE.Object3D();
+
+
+        number=selectTeams.relations.length;
+        console.log("【number】:"+number);
+        initXYZ(number,0,0,200);
+        bloader = new THREE.BinaryLoader( true );
+        bloader.load( "obj/Male02_bin.js", function( geometry ) {
+
+            for( var s in peoples ) {
+                var p=peoples[s];
+                if(p.xb=='0') continue;
+                var mesh = selectName== p.name?createMesh(geometry, scene, 1,0, 0,  200,0x0095cd, p.name,200,p.id):createMesh(geometry, scene, 1,XYZ.pop(), 0,  XYZ.pop(),0xff9922, p.name,200,p.id);
+               // var mesh = createMesh(geometry, scene, 1,Math.random() * 1000 - 400, 0,  Math.random() * 1000 - 400, 0xff9922, p.name,200);
+                mesh.id= p.id;
+                mesh.name="modle";
+                scene.add(mesh);
+                peoples_mesh[p.name]=mesh;
+            }
+            drawRelationLine();
+
+        } );
+        bloader.load( "obj/Female02_bin.js", function( geometry ) {
+            for( var s in peoples ) {
+                var p=peoples[s];
+                if(p.xb=='1') continue;
+                var color=colors[Math.floor(Math.random()*colors.length)];
+                var mesh = selectName== p.name?createMesh(geometry, scene, 1,0, 0,  200,0x0095cd, p.name,180,p.id):createMesh(geometry, scene, 1,XYZ.pop(), 0,  XYZ.pop(),0xff77dd, p.name,180, p.id);
+                mesh.id= p.id;
+                mesh.name="modle";
+                scene.add(mesh);
+                peoples_mesh[p.name]=mesh;
+            }
+            drawRelationLine();
+        } );
+
+
+
+        var light = new THREE.DirectionalLight( 0xffffff, 2 );
+        light.position.set( 1, 1, 1 ).normalize();
+        scene.add( light );
+
+        var light = new THREE.DirectionalLight( 0xffffff );
+        light.position.set( -1, -1, -1 ).normalize();
+        scene.add( light );
+
+      /*var helper = new THREE.GridHelper( 1000, 50 );
+        helper.setColors( 0x0000ff, 0x808080 );
+        helper.position.y = 0;
+        scene.add( helper );*/
+
+
+        projector = new THREE.Projector();
+        raycaster = new THREE.Raycaster();
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( scene.fog.color );
+        //renderer.setClearColor( scene.fog.color, 1 );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.sortObjects = false;
+        container.appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera);
+        controls.addEventListener( 'change', render );
+
+
+        document.addEventListener( 'click', onclick, false );
+        document.addEventListener( 'mousedown', onDocumentMouseMove, false );
+
+        //
+
+        window.addEventListener( 'resize', onWindowResize, false );
+      /*  for ( var i = 1, l = scene.children.length; i < l; i ++ ) {
+            if(scene.children[ i ].name=="line") return;
+            scene.children[ i ].lookAt( camera.position );
+
+
+        }*/
+
+    }
+
+    function initXYZ(number,x,y,z){
+        var angle=180/number;
+        console.log("【XYZ】");
+        for(var i=1;i<number;i++){
+          //  console.log(Math.cos(i*angle*Math.PI/180)+"||"+(150*Math.sin(i*angle*Math.PI/180));
+            XYZ.push(z-200*Math.sin(i*angle*Math.PI/180));
+            XYZ.push(200*Math.cos(i*angle*Math.PI/180)+x);
+        }
+        console.log(XYZ);
+    }
+    function drawRelationLine(){
+        loadflag++;
+        if(loadflag==2){
+            selectPeople=peoples_mesh[selectName];
+            peoples_mesh[selectName].position.set(0,0,200);
+            for(var s in peoples_mesh){
+                console.log(peoples_mesh[s].rl);
+                getLine(selectPeople,peoples_mesh[s],peoples[s].rl);
+            }
+            console.log(peoples_mesh);
+        }
+
+    }
+
+
+    function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    function onDocumentMouseMove( event ) {
+
+        event.preventDefault();
+
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+    }
+
+    //
+    function onclick(){
+        var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+        projector.unprojectVector( vector, camera );
+
+        raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+
+        var intersects = raycaster.intersectObjects( scene.children );
+
+        if ( intersects.length > 0 ) {
+            if ( INTERSECTED != intersects[ 0 ].object ) {
+                var object=intersects[ 0 ].object;
+                console.log("【click object】:");
+                console.log(object);
+              if(object.name=="modle"){
+                  //alert(object.id);
+                  var flagDetail = new PeopleLoad(object.id);
+                  flagDetail.loadPeople();
+              }
+
+                /*if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+                 INTERSECTED = intersects[ 0 ].object;
+                 INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                 INTERSECTED.material.emissive.setHex( 0xff0000 );*/
+            }
+
+        }/* else {
+
+
+            if ( INTERSECTED )  INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+            //console.log(INTERSECTED.material);
+
+
+            INTERSECTED = null;
+
+        }*/
+
+        render();
+    }
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+        render();
+
+    }
+
+    function render() {
+
+        renderer.render( scene, camera );
+
+    }
+
+    function createPeoples(){
+
+    }
+    function getRls(selectPeople,filerelations){
+        var sp=selectPeople;
+        var lp=filerelations;
+        console.log(selectPeople.name);
+
+        var list=[];
+        for(var s in lp){
+            var p=lp[s];
+            if(sp.name==p.f){
+                list.push(p);
+            }
+            console.log(p.f+"||"+ sp.name+"||"+s);
+        }
+        return list;
+
+    }
+    function getLine(start,end,text){
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push( start.position );
+        geometry.vertices.push( end.position );
+        var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff00ff, opacity: 1,linewidth:15 } ) );
+        line.name="line";
+
+        console.log("【getline.position】:("+(start.position.x+end.position.x)/2+","+(start.position.y+end.position.y)/2+","+(start.position.z+end.position.z)/2+")");
+        getText(text,(start.position.x+end.position.x)/2,(start.position.y+end.position.y)/2,(start.position.z+end.position.z)/2,0,0,null);
+        scene.add( line );
+    }
+
+    function getText(text,x,y,z,trans,id,modlename){
+        var canvas = document.createElement('canvas');
+        var size =150; // CHANGED
+
+        canvas.width = size;
+        canvas.height = size;
+        var context = canvas.getContext('2d');
+        context.fillStyle = '#333333'; // CHANGED
+        context.textAlign = 'center';
+        context.font = '48px 微软雅黑';
+        context.fillText(text, size/2 , size/2);
+        console.log("【text.positon】:("+x+","+y+","+z+")");
+
+        var amap = new THREE.Texture(canvas);
+        amap.needsUpdate = true;
+
+        var mat = new THREE.SpriteMaterial({
+            map: amap,
+            transparent: false,
+            useScreenCoordinates: false,
+            color: 0xffffff // CHANGED
+        });
+
+        var sp = new THREE.Sprite(mat);
+        sp.position.set(x,y,z);
+        sp.scale.set( 50,50, 1 ); // CHANGED
+        sp.translateY(trans);
+        if(id!=0) sp.id=id;
+        if(modlename=="modle") sp.name=modlename;
+        scene.add(sp);
+    }
+
+    function createMesh( originalGeometry, scene, scale, x, y, z, color,name,trans,id) {
+
+        console.log("【x,y,z】:"+x+","+y+","+z);
+        var i, c;
+
+        var vertices = originalGeometry.vertices;
+        var vl = vertices.length;
+
+        var geometry = new THREE.Geometry();
+        var vertices_tmp = [];
+
+        for ( i = 0; i < vl; i ++ ) {
+
+            p = vertices[ i ];
+
+            geometry.vertices[ i ] = p.clone();
+            vertices_tmp[ i ] = [ p.x, p.y, p.z, 0, 0 ];
+
+        }
+
+        var clones = [
+
+            [  6000, 0, -4000 ],
+            [  5000, 0, 0 ],
+            [  1000, 0, 5000 ],
+            [  1000, 0, -5000 ],
+            [  4000, 0, 2000 ],
+            [ -4000, 0, 1000 ],
+            [ -5000, 0, -5000 ],
+
+            [ 0, 0, 0 ]
+
+        ];
+
+
+
+            mesh = new THREE.PointCloud( geometry, new THREE.PointCloudMaterial( { size: 3, color: color } ) );
+            mesh.scale.x = mesh.scale.y = mesh.scale.z = scale;
+
+            mesh.position.x = x;
+            mesh.position.y = y;
+            mesh.position.z = z;
+            getText(name,x,y,z,trans,id,"modle");
+            //parent.add( mesh );
+            console.log("【createMesh】：");
+            console.log(mesh);
+            totaln += 1;
+            total += vl;
+
+
+        bloader.statusDomElement.style.display = "none";
+        return mesh;
+
+    }
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    };
+</script>
+
+</body>
+</html>

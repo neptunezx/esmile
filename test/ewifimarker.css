@@ -1,0 +1,62 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2015-1-22, 19:40:19
+    Author     : LENOVO
+*/
+
+.ewifi-marker {
+    background-color: 	rgba(0,0,0,.87);	
+    color:			#ffffff;
+    font-size:		4pt;
+    font-family: 		'RopaSans';
+    -moz-user-select:	-moz-none;
+    -khtml-user-select:	none;
+    -webkit-user-select:	none;
+    margin: 				0px;
+    border:					0px;
+    overflow: 				hidden;		
+    cursor:					pointer;
+}	
+
+.ewifi-marker-kiosk {
+position:absolute;
+font-size: 12px;
+line-height: 1.2em;
+background-color: rgba(31, 31, 31, 0.6);
+font-family: "Lucida Grande", "Lucida Sans Unicode", "微软雅黑", sans-serif;
+opacity:0.83;
+//border: 1px solid #EEC900;
+border-collapse:collapse;
+border-top:2px solid #EEC900; 
+}
+
+.ewifi-marker-kiosk th {
+text-align: right;
+text-transform: lowercase;
+color: #FFFF22;
+padding-left:5px; 
+}
+
+.ewifi-marker-kiosk td {
+text-align: left;
+color: white;
+padding-right:5px; 
+}
+
+.ewifi-marker-kiosk tr#detail-information th {
+text-align: left;
+text-indent: -9999px;
+background: url(images/coda/starburst.gif) no-repeat top right;
+height: 17px;
+}
+
+.ewifi-marker-kiosk tr#detail-information td a {
+color: #FFF;
+}
+        
+ 
+    

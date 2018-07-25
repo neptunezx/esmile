@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>three.js webgl - interactive cubes</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {
+                font-family: Monospace;
+                background-color: #f0f0f0;
+                margin: 0px;
+                overflow: hidden;
+            }
+        </style>
+        <script type="x-shader/x-vertex" id="v1">
+            uniform float amplitude;
+            attribute float size;
+            attribute vec3 customColor;
+
+            varying vec3 vColor;
+
+            void main() {
+
+            vColor = customColor;
+
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+            gl_PointSize = size;
+
+            gl_Position = projectionMatrix * mvPosition;
+
+            }
+        </script>
+
+        <script type="x-shader/x-fragment" id="f1">
+            uniform vec3 color;
+            uniform sampler2D texture;
+
+            varying vec3 vColor;
+
+            void main() {
+
+            gl_FragColor = vec4( vColor, 1 );
+            gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+
+
+            }
+        </script>
+        <script id="v2" type="x-shader/x-vertex">
+            uniform float mixAmount;
+            attribute vec3 endPosition;
+
+            varying vec2 vUv;
+
+            void main()
+            {
+            vUv = uv;
+            vec3 newPosition = mix( position, endPosition, mixAmount );
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+            }
+        </script>
+        <script id="f2" type="x-shader/x-vertex">
+            uniform sampler2D baseTexture;
+            varying vec2 vUv;
+
+            void main()
+            {
+            gl_FragColor = texture2D( baseTexture, vUv );
+            }
+        </script>
+        <script type="x-shader/x-vertex" id="v3">
+
+            uniform float amplitude;
+
+            attribute vec3 displacement;
+            attribute vec3 customColor;
+
+            varying vec3 vColor;
+
+            void main() {
+
+            vec3 newPosition = position + amplitude * displacement;
+
+            vColor = customColor;
+
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+
+            }
+
+        </script>
+
+        <script type="x-shader/x-fragment" id="f3">
+
+            uniform vec3 color;
+            uniform float opacity;
+
+            varying vec3 vColor;
+
+            void main() {
+
+            gl_FragColor = vec4( vColor , opacity );
+
+            }
+
+        </script>
+        <style>
+            #chart{
+               
+                position: relative;
+            }
+        </style>
+         <link rel="stylesheet" type="text/css" href="timeline.css">
+         <link rel="stylesheet" type="text/css" href="main.css">
+        <link rel="stylesheet" type="text/css" href="car.css">
+    </head>
+    <body>
+
+
+        <script src="../source/three.min.js"></script>
+        <script src="../library/three.js/src/core/Projector.js"></script> 
+        <script src="../library/three.js/src/renderers/Renderables/RenderableVertex.js"></script>
+        <script src="../library/three.js/src/renderers/Renderables/RenderableLine.js"></script>
+        <script src="../library/three.js/src/renderers/Renderables/RenderableFace.js"></script>
+        <script src="../library/three.js/src/renderers/Renderables/RenderableObject.js"></script>
+        <script src="../library/three.js/src/renderers/Renderables/RenderableSprite.js"></script>
+         <script src="../library/three.js/src/renderers/CanvasRenderer.js"></script>
+        <script src="../source/OrbitControls.js"></script>
+       
+         
+        <script src="../source/ESmile.js"></script>
+          <script src="../source/core/Base.js"></script>
+        <script src="../source/utils/IdGenerator.js"></script>
+        <script src="../source/core/Event.js"></script>
+        <script src="../source/core/EventDispatcher.js"></script>
+        <script src="../source/charts/Chart.js"></script>
+        <script src="../source/utils/GeoJsonLoader.js"></script>
+        <script src="../source/charts/DistrictMapChart.js"></script>
+
+
+        <script src="../source/utils/Environment.js"></script>
+        <script src="../source/charts/EventCenter.js"></script>
+        <script src="../source/components/Component.js"></script>
+        <script src="../source/graphics/GraphicObject.js"></script>
+        <script src="../source/utils/StaticText.js"></script>
+        <script src="../source/graphics/EarthMap.js"></script>
+        <script src="../source/graphics/GlowCurve.js"></script>
+        <script src="../source/graphics/GlowPoint.js"></script>
+        <script src="../source/utils/SpriteText.js"></script>
+        <script src="../source/components/ToolBox.js"></script>
+        <script src="../source/components/ToolTip.js"></script>
+        <script src="../source/components/Legend.js"></script>
+        <script src="../source/graphics/Title.js"></script>
+        <script src="../../code/library/d3.js/d3.js"></script>
+        <script src="../source/graphics/Shape.js"></script>
+        <script src="../source/graphics/PolygonColumn.js"></script>
+        <script src="../source/graphics/DistrictMap.js"></script>
+        <script src="../source/utils/Utils.js"></script>
+        <script src="../source/utils/Normalizer.js"></script>
+ 
+      
+
+        <div id="chart">
+ 
+          <nav id="timeline">
+            <ul>
+                <li class="loaded "><div class="marker" style="background-color: rgb(161, 176, 197);"></div><div class="menu-text">1880 - 1884</div></li><li class="loaded">
+                    <div class="marker" style="background-color: rgb(148, 166, 197);"></div><div class="menu-text">1890 - 1894</div></li><li class="loaded">
+                    <div class="marker" style="background-color: rgb(157, 173, 195);"></div><div class="menu-text">1900 - 1904</div></li><li class="loaded selected"><div class="marker" style="background-color: rgb(152, 169, 195);"></div><div class="menu-text">1910 - 1914</div></li><li class="loaded"><div class="marker" style="background-color: rgb(172, 182, 195);"></div><div class="menu-text">1920 - 1924</div></li><li class="loaded"><div class="marker" style="background-color: rgb(186, 187, 179);"></div><div class="menu-text">1930 - 1934</div></li><li class="loaded"><div class="marker" style="background-color: rgb(211, 202, 169);"></div><div class="menu-text">1940 - 1944</div></li><li class="loaded"><div class="marker" style="background-color: rgb(202, 201, 189);"></div><div class="menu-text">1950 - 1954</div></li><li class="loaded"><div class="marker" style="background-color: rgb(205, 209, 202);"></div><div class="menu-text">1960 - 1964</div></li><li class="loaded"><div class="marker" style="background-color: rgb(209, 208, 188);"></div><div class="menu-text">1970 - 1974</div></li><li class="loaded"><div class="marker" style="background-color: rgb(220, 210, 149);"></div><div class="menu-text">1980 - 1984</div></li><li class="loaded"><div class="marker" style="background-color: rgb(215, 200, 132);"></div><div class="menu-text">1990 - 1994</div></li><li class="loaded"><div class="marker" style="background-color: rgb(217, 181, 92);"></div><div class="menu-text">2000 - 2004</div></li></ul>
+        </nav>
+        </div>
+
+        <script>
+            var s = "g-a-g-a";
+            console.log(s.replace(/-/g, ""));
+
+            var camera, scene, renderer;
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2(), INTERSECTED;
+            var radius = 6300, theta = 0;
+            var graphic = new ESmile.GraphicObject();
+            var container = document.getElementById('chart');
+               
+ renderer = new THREE.WebGLRenderer();
+
+            var map = new ESmile.EarthMap();
+            graphic.add(map);
+            var chart = {
+                _camera: new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 50, 1e6),
+                _graphic: graphic,
+                //   _width:window.innerWidth,
+                //   _height:window.innerWidth,
+                _scene: new THREE.Scene(),
+                _domElement:container,
+                _renderer:renderer
+            };
+
+            camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 50, 1e7);
+            camera.position.z = map._radius * 5;
+            console.log(camera.position.z);
+
+            init();
+            animate();
+
+            function init() {
+
+
+
+
+
+                camera = chart._camera;
+                camera.position.z = map._radius * 5;
+                scene = chart._scene;
+
+                var dirLight = new THREE.DirectionalLight(0xffffff);
+                dirLight.position.set(-1, 0, 100).normalize();
+                scene.add(dirLight);
+                var dirLight2 = new THREE.DirectionalLight(0xffffff);
+                dirLight2.position.set(0, 1, -100).normalize();
+                dirLight2.shadowCameraVisible = true;
+                scene.add(dirLight2);
+                var ambientLight = new THREE.AmbientLight(0xffffff);
+                scene.add(ambientLight);
+
+
+                function graphicToScene(graphicObject, scene) {
+                  
+                    scene.add(graphicObject.root);
+                    for (var i = 0, length = graphicObject.children.length; i < length; i++) {
+                        graphicToScene(graphicObject.children[i], scene);
+                    }
+                }
+                ;
+
+
+                graphicToScene(chart._graphic, scene);
+                console.log(scene);
+               
+                renderer.setClearColor(0x000000);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.sortObjects = false;
+                container.appendChild(renderer.domElement);
+                var ec = new ESmile.EventCenter(chart, renderer.domElement);
+                var _control = new THREE.OrbitControls(camera, renderer.domElement);
+
+                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                document.addEventListener('click', onDocumentMouseClick, false);
+                //
+
+                window.addEventListener('resize', onWindowResize, false);
+
+            }
+
+            function onWindowResize() {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+            }
+
+            function onDocumentMouseMove(event) {
+
+                event.preventDefault();
+
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+
+
+
+            }
+
+
+            function onDocumentMouseClick(event) {
+
+                event.preventDefault();
+
+                console.log("***mouse.x:%f mouse.y:%f", mouse.x, mouse.y);
+                console.log("***camera");
+                console.log(camera.position);
+                console.log("clientX:%d, clientY:%d", event.clientX, event.clientY);
+                console.log("innerWidth:%d, innerHeight:%d", window.innerWidth, window.innerHeight);
+                console.log(event.clientX, event.clientY);
+                vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
+
+
+                raycaster.set(camera.position, vector.sub(camera.position).normalize());
+
+                var intersects = raycaster.intersectObject(scene, true);
+                console.log(intersects);
+
+            }
+            //
+
+            function animate() {
+
+                requestAnimationFrame(animate);
+                chart._graphic.update();
+                render();
+
+
+            }
+            var count = 1;
+            function render() {
+
+                renderer.render(scene, chart._camera);
+            }
+
+        </script>
+
+    </body>
+</html>

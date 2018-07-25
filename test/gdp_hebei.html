@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="timeline.css">
+    <script src="../source/three.min.js"></script>
+    <script src="../source/OrbitControls.js"></script>
+    <script src="../source/ESmile.js"></script>
+    <script src="../source/utils/IdGenerator.js"></script>
+    <script src="../source/core/Event.js"></script>
+    <script src="../source/core/EventDispatcher.js"></script>
+    <script src="../source/core/Base.js"></script>
+    <script src="../source/charts/Chart.js"></script>
+    <script src="../source/utils/GeoJsonLoader.js"></script>
+    <script src="../source/charts/DistrictMapChart.js"></script>
+    <script src="../source/utils/Environment.js"></script>
+    <script src="../source/charts/EventCenter.js"></script>
+    <script src="../source/components/Component.js"></script>
+    <script src="../source/components/Title.js"></script>
+    <script src="../source/components/Progress.js"></script>
+    <script src="../source/components/Timeline.js"></script>
+    <script src="../source/components/Credit.js"></script>
+    <script src="../source/components/Description.js"></script>
+    <script src="../source/graphics/GraphicObject.js"></script>
+    <script src="../source/utils/StaticText.js"></script>
+    <script src="../source/graphics/SphereCluster.js"></script>
+    <script src="../source/utils/Text.js"></script>
+    <script src="../source/utils/SpriteText.js"></script>
+    <script src="../source/components/ToolBox.js"></script>
+    <script src="../source/components/ToolTip.js"></script>
+    <script src="../source/components/Legend.js"></script>
+    <script src="../source/graphics/Title.js"></script>
+    <script src="../source/graphics/Shape.js"></script>
+    <script src="../source/graphics/PolygonColumn.js"></script>
+    <script src="../source/graphics/DistrictMap.js"></script>
+    <script src="../source/utils/Utils.js"></script>
+    <script src="../source/utils/Normalizer.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="car.css">
+    <link rel="stylesheet" type="text/css" href="gdp_hebei.css">
+</head>
+
+<body>
+<div id="container">
+    <div id="head">
+        <div id="logo">
+            <h1>eHuaLu</h1>
+
+        </div>
+        <div id="title">
+            <h1>河北省GDP</h1>
+        </div>
+    </div>
+    
+    <hr color=deepskyblue>
+    
+    <div id="chart">
+    </div>
+
+    <script>
+        var cities;
+        data = [
+            {name: 'china', amount: Math.round(Math.random() * 40.0), color: 0x00ff00}, {id: 'tian_jin', amount: Math.round(Math.random() * 4)}, {id: 'shang_hai', amount: Math.round(Math.random() * 4)}, {id: 'chong_qing', amount: Math.round(Math.random() * 4)}, {id: 'he_bei', amount: Math.round(Math.random() * 4)},
+            {name: 'Iran', amount: Math.round(Math.random() * 40.0)}, {id: 'yun_nan', amount: Math.round(Math.random() * 4)}, {id: 'liao_ning', amount: Math.round(Math.random() * 4)}, {id: 'jiang_su', amount: Math.round(Math.random() * 4)}, {id: 'zhe_jiang', amount: Math.round(Math.random() * 4)},
+            {id: 'jiang_xi', amount: Math.round(Math.random() * 40.0)}, {id: 'hu_bei', amount: Math.round(Math.random() * 4)}, {id: 'guang_xi', amount: Math.round(Math.random() * 4)}, {id: 'fu_jian', amount: Math.round(Math.random() * 4)}, {id: 'gui_zhou', amount: Math.round(Math.random() * 4)},
+            {id: 'nei_meng_gu', amount: Math.round(Math.random() * 4.0)}, {id: 'shan_xi', amount: Math.round(Math.random() * 4)}, {id: 'ji_ling', amount: Math.round(Math.random() * 4)}, {id: 'si_chuan', amount: Math.round(Math.random() * 4)}, {id: 'lin_xia', amount: Math.round(Math.random() * 4)},
+            {id: 'guang_dong', amount: Math.round(Math.random() * 4.0)}, {id: 'qi_hai', amount: Math.round(Math.random() * 4)}, {id: 'xi_zang', amount: Math.round(Math.random() * 4)}, {id: 'hei_long_jiang', amount: Math.round(Math.random() * 4)}, {id: 'hu_nan', amount: Math.round(Math.random() * 4)},
+            {id: 'hai_nan', amount: Math.round(Math.random() * 4.0)}, {id: 'tai_wan', amount: Math.round(Math.random() * 4)}, {id: 'xiang_gang', amount: Math.round(Math.random() * 4)}
+        ];
+
+        data_he_bei =  [
+
+            { name:"唐山", amount:6121.1},
+            { name:"石家庄", amount:4863.6},
+            { name:"廊坊", amount:1943.1},
+            { name:"沧州", amount:3020},
+            { name:"秦皇岛", amount:1168.8},
+            { name:"承德", amount:1272.09},
+            { name:"邯郸", amount:3061.5},
+            { name:"张家口", amount:1317},
+            { name:"衡水", amount:1110},
+            { name:"保定", amount:2680},
+            { name:"邢台", amount:1604.6}
+
+        ];
+
+        var options = {
+            title: {
+                title: "ESmile Data Visulization",
+                subtitle: "by ESmile 2014",
+                link: "http://www.ehualu.com",
+                sublink: "http://www.ehualu.com/ESmile/DataVisulization"
+            },
+            mapType: "asia",
+            mapData: data
+        };
+
+        var chart;
+        //chart = new ESmile.DistrictMapChart(document.getElementById("chart"), options);
+        chart = new ESmile.DistrictMapChart(document.getElementById("chart"), {mapType: "CHN/he_bei", mapData: data_he_bei});
+        chart.setBackgroundColor(0x11264f);
+        document.body.style.background = '#11264f';
+        chart.render();
+
+    </script>
+
+    <div id="gdp">
+        <h2>GDP排名：</h2>
+        <ol>
+            <li>唐山市：6121.1亿 RMB</li>
+            <li>石家庄：4863.6亿 RMB</li>
+            <li>邯郸市：3061.5亿 RMB</li>
+            <li>沧州市：3020.0亿 RMB</li>
+            <li>保定市：2680.0亿 RMB</li>
+            <li>廊坊市：1943.1亿 RMB</li>
+            <li>邢台市：1604.6亿 RMB</li>
+            <li>张家口：1317.0亿 RMB</li>
+            <li>承德市：1272.1亿 RMB</li>
+            <li>秦皇岛：1168.8亿 RMB</li>
+            <li>衡水市：1110.0亿 RMB</li>
+        </ol>
+    </div>
+
+    <div id="gdp-pp">
+        <h2>人均GDP排名：</h2>
+        <ol>
+            <li>唐山市：79365.20元 RMB</li>
+            <li>石家庄：46828.42元 RMB</li>
+            <li>廊坊市：44854.57元 RMB</li>
+            <li>沧州市：40571.77元 RMB</li>
+            <li>秦皇岛：38681.49元 RMB</li>
+            <li>承德市：34107.95元 RMB</li>
+            <li>邯郸市：30827.71元 RMB</li>
+            <li>张家口：28874.05元 RMB</li>
+            <li>衡水市：25090.42元 RMB</li>
+            <li>保定市：23609.42元 RMB</li>
+            <li>邢台市：22321.45元 RMB</li>
+        </ol>
+    </div>
+
+    <!--div id="gdp-else">
+        <h2>河北省历年GDP：</h2>
+        <p>曲线图</p>
+        <p>曲线图</p>
+        <p>曲线图</p>
+        <p>曲线图</p>
+    </div-->
+</div>
+</body>
+</html>

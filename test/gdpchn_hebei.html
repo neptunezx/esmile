@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="timeline.css">
+    <script src="../source/three.min.js"></script>
+    <script src="../source/OrbitControls.js"></script>
+    <script src="../source/ESmile.js"></script>
+    <script src="../source/utils/IdGenerator.js"></script>
+    <script src="../source/core/Event.js"></script>
+    <script src="../source/core/EventDispatcher.js"></script>
+    <script src="../source/core/Base.js"></script>
+    <script src="../source/charts/Chart.js"></script>
+    <script src="../source/utils/GeoJsonLoader.js"></script>
+    <script src="../source/charts/DistrictMapChart.js"></script>
+    <script src="../source/utils/Environment.js"></script>
+    <script src="../source/charts/EventCenter.js"></script>
+    <script src="../source/components/Component.js"></script>
+    <script src="../source/components/Title.js"></script>
+    <script src="../source/components/Progress.js"></script>
+    <script src="../source/components/Timeline.js"></script>
+    <script src="../source/components/Credit.js"></script>
+    <script src="../source/components/Description.js"></script>
+    <script src="../source/graphics/GraphicObject.js"></script>
+    <script src="../source/utils/StaticText.js"></script>
+    <script src="../source/graphics/SphereCluster.js"></script>
+    <script src="../source/utils/Text.js"></script>
+    <script src="../source/utils/SpriteText.js"></script>
+    <script src="../source/components/ToolBox.js"></script>
+    <script src="../source/components/ToolTip.js"></script>
+    <script src="../source/components/Legend.js"></script>
+    <script src="../source/graphics/Title.js"></script>
+    <script src="../source/graphics/Shape.js"></script>
+    <script src="../source/graphics/PolygonColumn.js"></script>
+    <script src="../source/graphics/DistrictMap.js"></script>
+    <script src="../source/utils/Utils.js"></script>
+    <script src="../source/utils/Normalizer.js"></script>
+    <link rel="stylesheet" type="text/css" href="gdpchn_car.css">
+    <link rel="stylesheet" type="text/css" href="gdpchn_main.css">
+
+    <style type="text/css">
+        body{
+            background-color: #EEEEEE;
+        }
+
+        #chart{
+            height:99%;
+            width:430px;;
+            position: fixed;
+            left:170px;
+            top: 5px;
+        }
+
+        #chart_{
+            height:99%;
+            width:430px;;
+            position: fixed;
+            right: 5px;
+            top: 5px;
+        }
+
+        #gdp{
+            position:fixed;
+            height:225px;
+            width:175px;
+            left:0px;
+            top:20px;
+            text-align:left;
+            color:#000;
+            font-family: "微软雅黑";
+        }
+
+        #gdp ol li{
+            padding-top: 15px;
+        }
+
+        #gdp h2{
+            margin-left: 20px;
+            text-align:left;
+            color:#3A4953;
+            font-family: "微软雅黑";
+        }
+
+        #gdp-pp{
+            position:fixed;
+            height:225px;
+            width:200px;
+            right:420px;
+            top:20px;
+            text-align:left;
+            color:#000;
+            font-family: "微软雅黑";
+        }
+
+        #gdp-pp ol li{
+            padding-top: 15px;
+        }
+
+        #gdp-pp h2{
+            margin-left: 20px;
+            text-align:left;
+            color:#3A4953;
+            font-family: "微软雅黑";
+        }
+    </style>
+</head>
+
+<body>
+<div id="container">
+    
+    <div id="chart">
+    </div>
+
+    <div id="chart_">
+    </div>
+
+    <script>
+        var cities;
+        data = [
+            {name: 'china', amount: Math.round(Math.random() * 40.0), color: 0x00ff00}, {id: 'tian_jin', amount: Math.round(Math.random() * 4)}, {id: 'shang_hai', amount: Math.round(Math.random() * 4)}, {id: 'chong_qing', amount: Math.round(Math.random() * 4)}, {id: 'he_bei', amount: Math.round(Math.random() * 4)},
+            {name: 'Iran', amount: Math.round(Math.random() * 40.0)}, {id: 'yun_nan', amount: Math.round(Math.random() * 4)}, {id: 'liao_ning', amount: Math.round(Math.random() * 4)}, {id: 'jiang_su', amount: Math.round(Math.random() * 4)}, {id: 'zhe_jiang', amount: Math.round(Math.random() * 4)},
+            {id: 'jiang_xi', amount: Math.round(Math.random() * 40.0)}, {id: 'hu_bei', amount: Math.round(Math.random() * 4)}, {id: 'guang_xi', amount: Math.round(Math.random() * 4)}, {id: 'fu_jian', amount: Math.round(Math.random() * 4)}, {id: 'gui_zhou', amount: Math.round(Math.random() * 4)},
+            {id: 'nei_meng_gu', amount: Math.round(Math.random() * 4.0)}, {id: 'shan_xi', amount: Math.round(Math.random() * 4)}, {id: 'ji_ling', amount: Math.round(Math.random() * 4)}, {id: 'si_chuan', amount: Math.round(Math.random() * 4)}, {id: 'lin_xia', amount: Math.round(Math.random() * 4)},
+            {id: 'guang_dong', amount: Math.round(Math.random() * 4.0)}, {id: 'qi_hai', amount: Math.round(Math.random() * 4)}, {id: 'xi_zang', amount: Math.round(Math.random() * 4)}, {id: 'hei_long_jiang', amount: Math.round(Math.random() * 4)}, {id: 'hu_nan', amount: Math.round(Math.random() * 4)},
+            {id: 'hai_nan', amount: Math.round(Math.random() * 4.0)}, {id: 'tai_wan', amount: Math.round(Math.random() * 4)}, {id: 'xiang_gang', amount: Math.round(Math.random() * 4)}
+        ];
+
+        /** ???error
+        var data_color = new Array();
+
+        data_color[0] = "0xff6600";
+        data_color[1] = "0xff6622";
+        data_color[2] = "0xff6644";
+        data_color[3] = "0xff6666";
+        data_color[4] = "0xff6688";
+        data_color[5] = "0xff66aa";
+        data_color[6] = "0xff66cc";
+        data_color[7] = "0xff66ee";
+        data_color[8] = "0xff6700";
+        data_color[9] = "0xff6722";
+        data_color[10] = "0xff6733";
+
+        data_he_bei =  [
+            { name:"唐山", amount:6121.1, color: data_color[0]},
+            { name:"石家庄", amount:4863.6, color: data_color[1]},
+            { name:"廊坊", amount:1943.1, color: data_color[2]},
+            { name:"沧州", amount:3020, color: data_color[3]},
+            { name:"秦皇岛", amount:1168.8, color: data_color[4]},
+            { name:"承德", amount:1272.09, color: data_color[5]},
+            { name:"邯郸", amount:3061.5, color: data_color[6]},
+            { name:"张家口", amount:1317, color: data_color[7]},
+            { name:"衡水", amount:1110, color: data_color[8]},
+            { name:"保定", amount:2680, color: data_color[9]},
+            { name:"邢台", amount:1604.6, color: data_color[10]}
+
+        ];
+        */
+
+        var data_color_1 = 0xff6600;
+        var data_color_2 = 0xff6622;
+        var data_color_3 = 0xff6644;
+        var data_color_4 = 0xff6666;
+        var data_color_5 = 0xff6688;
+        var data_color_6 = 0xff66aa;
+        var data_color_7 = 0xff66cc;
+        var data_color_8 = 0xff66ee;
+        var data_color_9 = 0xff6700;
+        var data_color_10 = 0xff6722;
+        var data_color_11 = 0xff6744;
+
+        data_he_bei_dgp =  [
+            { name:"唐山", amount:6121.1, color: data_color_1},
+            { name:"石家庄", amount:4863.6, color: data_color_2},
+            { name:"廊坊", amount:1943.1, color: data_color_3},
+            { name:"沧州", amount:3020, color: data_color_4},
+            { name:"秦皇岛", amount:1168.8, color: data_color_5},
+            { name:"承德", amount:1272.09, color: data_color_6},
+            { name:"邯郸", amount:3061.5, color: data_color_7},
+            { name:"张家口", amount:1317, color: data_color_8},
+            { name:"衡水", amount:1110, color: data_color_9},
+            { name:"保定", amount:2680, color: data_color_10},
+            { name:"邢台", amount:1604.6, color: data_color_11}
+
+        ];
+        
+        data_he_bei_gdp_pp =  [
+            { name:"唐山", amount:79365.20, color: data_color_1},
+            { name:"石家庄", amount:46828.42, color: data_color_2},
+            { name:"廊坊", amount:44854.57, color: data_color_3},
+            { name:"沧州", amount:40571.77, color: data_color_4},
+            { name:"秦皇岛", amount:38681.49, color: data_color_5},
+            { name:"承德", amount:34107.95, color: data_color_6},
+            { name:"邯郸", amount:30827.71, color: data_color_7},
+            { name:"张家口", amount:29974.05, color: data_color_8},
+            { name:"衡水", amount:25090.42, color: data_color_9},
+            { name:"保定", amount:23609.42, color: data_color_10},
+            { name:"邢台", amount:22321.45, color: data_color_11}
+
+        ];
+
+
+        var options = {
+            map: {
+                type: "CHN/he_bei",
+                data: data_he_bei_dgp,
+                style: {
+                    backgroundColor: "#eeeeee",
+                    //selectedColor:"#7B7B7B",
+                    forwardColor:"#BEBEED"
+                }
+            }
+        };
+        
+        var options_ = {
+            map: {
+                type: "CHN/he_bei",
+                data: data_he_bei_gdp_pp,
+                style: {
+                    backgroundColor: "#eeeeee",
+                    //selectedColor:"#7B7B7B",
+                    forwardColor:"#BEBEED"
+                }
+            }
+        };
+        
+        var chart;
+        chart = new ESmile.DistrictMapChart(document.getElementById("chart"), options);
+        chart.setBackgroundColor(0xf3f3f3);
+        //document.body.style.background = '#11264f';
+        chart.render();
+
+        var chart_;
+        chart_ = new ESmile.DistrictMapChart(document.getElementById("chart_"), options_);
+        chart_.setBackgroundColor(0xf3f3f3);
+        //document.body.style.background = '#11264f';
+        chart_.render();
+    </script>
+
+    <div id="gdp">
+        <h2>河北省2013年</h2>
+        <h2>各市GDP排名：</h2>
+        <ol>
+            <li id="cities">唐山市：6121.1亿 RMB</li>
+            <li>石家庄：4863.6亿 RMB</li>
+            <li>邯郸市：3061.5亿 RMB</li>
+            <li>沧州市：3020.0亿 RMB</li>
+            <li>保定市：2680.0亿 RMB</li>
+            <li>廊坊市：1943.1亿 RMB</li>
+            <li>邢台市：1604.6亿 RMB</li>
+            <li>张家口：1317.0亿 RMB</li>
+            <li>承德市：1272.1亿 RMB</li>
+            <li>秦皇岛：1168.8亿 RMB</li>
+            <li>衡水市：1110.0亿 RMB</li>
+        </ol>
+    </div>
+
+    <div id="gdp-pp">
+        <h2>河北省2013年</h2>
+        <h2>各市人均GDP排名：</h2>
+        <ol>
+            <li>唐山市：79365.20元 RMB</li>
+            <li>石家庄：46828.42元 RMB</li>
+            <li>廊坊市：44854.57元 RMB</li>
+            <li>沧州市：40571.77元 RMB</li>
+            <li>秦皇岛：38681.49元 RMB</li>
+            <li>承德市：34107.95元 RMB</li>
+            <li>邯郸市：30827.71元 RMB</li>
+            <li>张家口：28874.05元 RMB</li>
+            <li>衡水市：25090.42元 RMB</li>
+            <li>保定市：23609.42元 RMB</li>
+            <li>邢台市：22321.45元 RMB</li>
+        </ol>
+    </div>
+</div>
+</body>
+</html>

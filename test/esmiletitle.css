@@ -1,0 +1,50 @@
+.esmile-title {
+    z-index: -1;
+    float: left;
+    margin-left: 30px;
+    margin-top: 15px;
+    width: auto;
+    position: absolute;
+    left: -0px;
+    -moz-user-select:-moz-none;
+    -khtml-user-select:	none;
+    -webkit-user-select:none;
+}
+.esmile-title-main{
+    font-family: 'Lato', Calibri, 微软雅黑, sans-serif;
+    color: #EEE;
+    text-align: left;
+    font-size: 24px;
+    font-weight: 500;
+    z-index: 1;
+    cursor: pointer;
+    position: relative;
+    width: auto;
+    /*margin: 0px auto;*/
+}
+ 
+.esmile-title-guide{
+    z-index: 1;
+    position: relative;
+    background-color: #eee;
+    width: auto;
+    margin-top:3px ;
+    margin-bottom:5px ;
+    height: 1px;
+}
+
+.esmile-title-sub {
+    font-family: 'Lato', Calibri,  微软雅黑, sans-serif;
+    color: #B8B8B8;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 300;
+    z-index: 1;
+    cursor: pointer;
+    position: relative;
+    width: auto;
+    margin-top: 2px;
+}
+.esmile-title-sub :hover {
+    color:#FFF68F;
+}

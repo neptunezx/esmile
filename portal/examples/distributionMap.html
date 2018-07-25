@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <script src="../../source/three.min.js"></script>
+    <script src="../../source/OrbitControls.js"></script>
+<!--    <script src="../source/DAT.GUI.min.js"></script>-->
+
+    <script src="../../source/ESmile.js"></script>
+    <script src="../../source/utils/IdGenerator.js"></script>
+    <script src="../../source/core/Event.js"></script>
+    <script src="../../source/core/EventDispatcher.js"></script>
+    <script src="../../source/charts/Chart.js"></script>
+    <script src="../../source/utils/GeoJsonLoader.js"></script>
+    <script src="../../source/charts/DistributionMapChart.js"></script>
+
+
+    <script src="../../source/utils/Environment.js"></script>
+    <script src="../../source/charts/EventCenter.js"></script>
+    <script src="../../source/components/Component.js"></script>
+    <script src="../../source/graphics/GraphicObject.js"></script>
+    <script src="../../source/utils/StaticText.js"></script>
+    <script src="../../source/graphics/SphereCluster.js"></script>
+    <script src="../../source/utils/Text.js"></script>
+    <script src="../../source/utils/SpriteText.js"></script>
+    <script src="../../source/components/ToolBox.js"></script>
+    <script src="../../source/components/ToolTip.js"></script>
+<!--    <script src="../source/components/FunctionGUI.js"></script>-->
+    <script src="../../source/components/Legend.js"></script>
+    <script src="../../source/graphics/Title.js"></script>
+    <!--script src="../../code/library/d3.js/d3.js"></script-->
+    <script src="../../source/graphics/Shape.js"></script>
+    <script src="../../source/graphics/PolygonColumn.js"></script>
+    <script src="../../source/graphics/CubeCluster.js"></script>
+    <script src="../../source/graphics/DistrictMap.js"></script>
+    <script src="../../source/graphics/DistributionMap.js"></script>
+    <script src="../../source/utils/Utils.js"></script>
+    <script src="../../source/utils/Normalizer.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/car.css">
+    <style>
+        #chart{
+            height:600px;
+            width:1400px;
+            position: relative;
+        }
+    </style>
+
+</head>
+<body>
+<div id="chart">
+</div>
+<script>
+
+    function generateData(maxX,maxY,minX,minY,id,code,color)
+    {
+        var axisX = minX,axisY=minY;
+        var data = "";
+        var i=0;
+        var gap = 0.03;
+        var h = 0;
+        for(; axisX<maxX;)
+        {
+
+            for(;axisY<maxY;)
+            {
+                data += '"'+id+i+'":{"x":'+axisX+',"y":'+axisY+',"code":"'+code+'","color":"'+color+'"},';
+                axisY = floatAdd(axisY,gap);
+                i++;
+            }
+            axisY=minY;
+            axisX = floatAdd(axisX,gap);
+        }
+        data += '"'+id+i+'":{"x":'+axisX+',"y":'+axisY+',"code":"'+code+'","color":"'+color+'"}';
+        return data;
+    }
+    function floatAdd(arg1, arg2) {
+
+        var r1, r2, m, c;
+
+        try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+
+        try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+
+        c = Math.abs(r1 - r2);
+        m = Math.pow(10, Math.max(r1, r2))
+        if (c > 0) {
+            var cm = Math.pow(10, c);
+            if (r1 > r2) {
+                arg1 = Number(arg1.toString().replace(".", ""));
+                arg2 = Number(arg2.toString().replace(".", "")) * cm;
+            }
+            else {
+                arg1 = Number(arg1.toString().replace(".", "")) * cm;
+                arg2 = Number(arg2.toString().replace(".", ""));
+            }
+        }
+        else {
+            arg1 = Number(arg1.toString().replace(".", ""));
+            arg2 = Number(arg2.toString().replace(".", ""));
+        }
+        return (arg1 + arg2) / m;
+
+    }
+</script>
+<script>
+    var cities;
+    var city = "北京"
+    document.body.style.background = '#11264f';
+   /* var data =  '[{'+generateData(116.68,40.98,116.5,40.78,1,"怀柔区","#9933ff")+","+generateData(116.74,40.88,116.7,40.78,2,"怀柔区","#9933ff")+","+generateData(116.72,40.8,116.54,40.3,3,"怀柔区","#9933ff")+","+generateData(116.5,40.5,116.32,40.4,4,"怀柔区","#9933ff")+","
+            +generateData(116.99,40.7,116.75,40.32,5,"密云县","#669900")+","+generateData(117.2,40.7,117.01,40.4,6,"密云县","#669900")+","
+            +generateData(116.04,39.85,115.64,39.65,7,"房山区","#ffff00")+","
+            +generateData(116.42,40.3,116.02,40.2,8,"昌平区","#ff6666")+","+generateData(116.44,40.18,116.28,40.08,9,"昌平区","#ff6666")
+            +'}]';*/
+    var data = '[{"id":"怀柔区","amount":{'+generateData(116.68,40.98,116.5,40.78,1,"怀柔区","#9933ff")+","+generateData(116.74,40.88,116.7,40.78,2,"怀柔区","#9933ff")+","+generateData(116.72,40.8,116.54,40.3,3,"怀柔区","#9933ff")+","+generateData(116.5,40.5,116.32,40.4,4,"怀柔区","#9933ff")+'}},' +
+            '{"id":"密云县","amount":{'+generateData(116.99,40.7,116.75,40.32,5,"密云县","#669900")+","+generateData(117.2,40.7,117.01,40.4,6,"密云县","#669900")+'}},'+
+            '{"id":"房山区","amount":{'+generateData(116.04,39.85,115.64,39.65,7,"房山区","#ffff00")+'}},'+
+            '{"id":"昌平区","amount":{'+generateData(116.42,40.3,116.02,40.2,8,"昌平区","#ff6666")+","+generateData(116.44,40.18,116.28,40.08,9,"昌平区","#ff6666")+'}}'+
+            ']';
+
+    var chart;
+
+    chart = new ESmile.DistributionMapChart(document.getElementById("chart"), { mapType:"CHN/bei_jing", mapData:data,city:city });
+    chart.setBackgroundColor(0x11264f);
+    chart.render();
+
+
+</script>
+<div id="tool-bar">
+    <div id="select-car">
+        <ul id="nav">
+            <li class="top"><a>选择数据</a>
+                <ul class="car">
+                    <li onclick="chart.setBackgroundColor(0x000000);document.body.style.background = '#000000';"><a>2004年</a></li>
+                    <li onclick="chart.setBackgroundColor(0xfafafa);document.body.style.background = '#f3f3f3';"><a>2005年</a></li>
+                    <li onclick="chart.setBackgroundColor(0x63a3ff);document.body.style.background = '#63a3ff';"><a>2006年</a></li>
+                    <li onclick="chart.setBackgroundColor(0x11264f);document.body.style.background = '#11264f';"><a>2007年</a></li>
+                    <li onclick="chart.setBackgroundColor(0xf300f3);document.body.style.background = '#f300f3';"><a>2008年</a></li>
+                    <li onclick="chart.setBackgroundColor(0x446688);document.body.style.background = '#446688';"><a>2009年</a></li>
+                    <li onclick="chart.setBackgroundColor(0x33A1C9);document.body.style.background = '#33A1C9';"><a>2010年</a></li>
+                    <li onclick="chart.setBackgroundColor(0xEB8E55);document.body.style.background = '#EB8E55';"><a>2010年</a></li>
+                </ul>
+            </li>
+            <li class="top"><a>背景色</a>
+                <ul class="color">
+                    <canvas id="body-picker-canvas"></canvas>
+                </ul>
+            </li>
+            <li class="top"><a>前景色</a>
+                <ul class="color">
+                    <canvas id="rims-picker-canvas"></canvas>
+                </ul>
+            </li>
+
+            <li class="top"><a>作者</a>
+                <ul class="credits">
+                    <p>Made by <a onMouseUp="javascript:void window.open('http://www.plus360degrees.com/');return false;">Plus360degrees</a>: Follow us on <a onMouseUp="javascript:void window.open('http://www.facebook.com/pages/Plus-360-Degrees/143631622326945');return false;">Facebook</a> or <a onMouseUp="javascript:void window.open('https://twitter.com/#!/plus360degrees');return false;">Twitter</a> for future updates! <br>Delia Otetea: 3D Modeler, Graphic Designer, User Experience Designer. <br><a onMouseUp="javascript:void window.open('http://www.thefloatingwall.com/');return false;">Ivan Moreno</a>: Interactive-Games Developer, Graphic Designer, User Experience Designer. <br><br>Powered by <a onMouseUp="javascript:void window.open('https://github.com/mrdoob/three.js/');return false;">Three.js</a>. Many thanks to Mr.Doob, Alteredqualia and all the contributors for the great work on the engine.<br><br>This application is not for commercial purposes for the cars and brands displayed in it. The design of the cars and<br> logos are exclusively of the brands presented in this application and NO modifications were made by the author of  <br>the application.List of cars displayed: <a class="cars-link" onMouseUp="javascript:void window.open('http://www.ferrari.com/english/gt_sport%20cars/currentrange/ferraricalifornia/Pages/California.aspx');return false;">Ferrari - California</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www5.mercedes-benz.com/en/');return false;">Mercedes Benz</a> - McLaren SLR. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.mitsubishicars.com/MMNA/jsp/evo/12/showroom/overview.do?flash=overview#/?page=overviewSplash');return false;">Mitsubishi - </a><br>Lancer Evolution X. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.mazdausa.com/MusaWeb/displayPage.action?pageParameter=modelsMain&vehicleCode=M3S#/home');return false;"></a>Mazda - 3. <br><a class="cars-link" onMouseUp="javascript:void window.open('http://www.chevrolet.com/camaro-performance-cars/');return false;">Chevrolet - Camaro</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.nissanusa.com/');return false;">Nissan</a> - 350Z. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.astonmartin.com/cars/v8-vantage-coupe');return false;">Aston Martin - V8 Vantage</a>. <a class="cars-link" onMouseUp="javascript:void window.open('http://www.audi.com/com/brand/en/models/a3/s3.html');return false;">Audi - S3</a>. <br><br>The soundtrack is composed and mixed by <a onMouseUp="javascript:void window.open('http://incompetech.com/');return false;">Kevin McLeod</a>. List of songs in order of appearance: Dark Times. Second<br> Coming. Mechanolith. Prelude and Action. Death of Kings. Sudden Defeat. Dangerous. Faceoff. Hero Down. <br><br>Keep in touch! more cars to come!</p>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

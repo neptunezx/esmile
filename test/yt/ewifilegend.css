@@ -1,0 +1,34 @@
+ .ewifi-legend{
+    z-index: 1;
+    position: absolute;
+    margin-top:100px;
+    margin-left:25px;
+    overflow: auto;
+    
+}
+.ewifi-legend-item{
+    height:18px;
+    opacity: 0.8;
+    cursor:pointer;
+}
+
+.ewifi-legend-item-marker :hover {
+    color: #ffffff;
+    opacity: 0.6;
+    
+}
+ 
+.ewifi-legend-item-marker{
+    width:20px;
+    height:10px;
+    margin:4px;
+    float:left;
+}
+.ewifi-legend-item-label{
+    margin:1px 3px 0px;
+    float:left;
+    font-size: 12px;
+    font-family: 'Lato', Calibri, Arial, sans-serif; 
+    color:#222;
+}
+

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - interactive cubes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            font-family: Monospace;
+            background-color: #f0f0f0;
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+
+<!--script src ="../source/three.min.js" ></script>
+<script src ="../source/ESmile.js" ></script>
+<script src ="../source/utils/Environment.js"></script>
+<script src ="../source/utils/Data.js"></script>
+<script src ="../source/utils/Utils.js"></script>
+<script src ="../source/utils/Text.js"></script>
+<script src ="../source/utils/StaticText.js"></script>
+<script src ="../source/utils/SpriteText.js"></script>
+<script src ="../source/utils/Environment.js"></script>
+<script src ="../source/utils/MapData.js"></script>
+<script src ="../source/core/Event.js"></script>
+<script src ="../source/core/EventDispatcher.js"></script>
+<script src ="../source/Components/Component.js"></script>
+<script src ="../source/Components/Legend.js"></script>
+<script src ="../source/Components/ToolBox.js"></script>
+<script src ="../source/Components/ToolTip.js"></script>
+
+<script src ="../source/graphics/GraphicObject.js"></script>
+<script src ="../source/graphics/PolygonColumn.js"></script>
+<script src ="../source/charts/EventCenter.js"></script>
+<script src ="../source/graphics/TestMap.js"></script>
+<script src ="../source/graphics/DistrictMap.js"></script-->
+<script src="../source/three.min.js"></script>
+<script src="../library/three.js/examples/js/controls/OrbitControls.js"></script>
+<script src="../source/ESmile.js"></script>
+<script src="../source/charts/Chart.js"></script>
+<script src="../source/charts/DistributionMapChart.js"></script>
+
+<script src="../source/core/Event.js"></script>
+<script src="../source/core/EventDispatcher.js"></script>
+<script src="../source/utils/Environment.js"></script>
+<script src="../source/charts/EventCenter.js"></script>
+<script src="../source/components/Component.js"></script>
+<script src="../source/graphics/GraphicObject.js"></script>
+<script src="../source/utils/StaticText.js"></script>
+<script src="../source/graphics/SphereCluster.js"></script>
+<script src="../source/utils/Text.js"></script>
+<script src="../source/utils/SpriteText.js"></script>
+<script src="../source/components/ToolBox.js"></script>
+<script src="../source/components/ToolTip.js"></script>
+<script src="../source/components/Legend.js"></script>
+<script src="../source/graphics/Title.js"></script>
+<script src="../../code/library/d3.js/d3.js"></script>
+<script src="../source/graphics/Shape.js"></script>
+<script src="../source/graphics/PolygonColumn.js"></script>
+<script src="../source/graphics/DistrictMap.js"></script>
+<script src="../source/utils/Utils.js"></script>
+<script src="../source/utils/MapData.js"></script>
+<script src="../source/utils/Data.js"></script>
+<link rel="stylesheet" type="text/css" href="main.css">
+<style>
+    #chart{
+        height:600px;
+        width:900px;
+        position: relative;
+    }
+</style>
+<div id="chart">
+</div>
+
+<script>
+
+
+    var camera, scene, renderer;
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2(), INTERSECTED;
+    var radius = 100, theta = 0;
+    var graphic = new ESmile.GraphicObject();
+    var container = document.getElementById( 'chart' );
+    //document.body.appendChild( container );
+    //var map1 = new ESmile.TestMap();
+   // var map2 = new ESmile.TestMap();
+   // var map3 = new ESmile.TestMap();
+    var  data;
+    var rawData;
+    try{
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function (){
+            if(xmlHttp.readyState == 4)
+            {
+                if (xmlHttp.status == 200 || xmlHttp.status == 0)
+                {
+                    var result = xmlHttp.responseText;
+                    rawData = eval("(" + result + ")").features;
+                    //data = new ESmile.Data(rawData.features);
+
+                    //alert(json.sex);
+                }
+            }
+        };
+        xmlHttp.open("GET", "../source/resource/mapData/rawData/geoJson/bei_jing_geo.json", false);
+        xmlHttp.send(null);
+    }
+    catch(exception)
+    {
+        alert("xmlHttp Fail");
+    }
+
+
+    var dataArray =
+            [{
+                type:"local",
+                name:"本地人口",
+                data:[
+                    {name: '北京',value: Math.round(Math.random()*1000)},{name: '天津',value: Math.round(Math.random()*1000)},{name: '上海',value: Math.round(Math.random()*1000)},{name: '重庆',value: Math.round(Math.random()*1000)},{name: '河北',value: Math.round(Math.random()*1000)},
+                    {name: '河南',value: Math.round(Math.random()*1000)},{name: '云南',value: Math.round(Math.random()*1000)},{name: '辽宁',value: Math.round(Math.random()*1000)},{name: '黑龙江',value: Math.round(Math.random()*1000)},{name: '湖南',value: Math.round(Math.random()*1000)},
+                    {name: '安徽',value: Math.round(Math.random()*1000)},{name: '山东',value: Math.round(Math.random()*1000)},{name: '新疆',value: Math.round(Math.random()*1000)},{name: '江苏',value: Math.round(Math.random()*1000)},{name: '浙江',value: Math.round(Math.random()*1000)},
+                    {name: '江西',value: Math.round(Math.random()*1000)},{name: '湖北',value: Math.round(Math.random()*1000)},{name: '广西',value: Math.round(Math.random()*1000)},{name: '甘肃',value: Math.round(Math.random()*1000)},{name: '山西',value: Math.round(Math.random()*1000)},
+                    {name: '内蒙古',value: Math.round(Math.random()*1000)},{name: '陕西',value: Math.round(Math.random()*1000)},{name: '吉林',value: Math.round(Math.random()*1000)},{name: '福建',value: Math.round(Math.random()*1000)},{name: '贵州',value: Math.round(Math.random()*1000)},
+                    {name: '广东',value: Math.round(Math.random()*1000)},{name: '青海',value: Math.round(Math.random()*1000)},{name: '西藏',value: Math.round(Math.random()*1000)},{name: '四川',value: Math.round(Math.random()*1000)},{name: '宁夏',value: Math.round(Math.random()*1000)},
+                    {name: '海南',value: Math.round(Math.random()*1000)},{name: '台湾',value: Math.round(Math.random()*1000)},{name: '香港',value: Math.round(Math.random()*1000)},{name: '澳门',value: Math.round(Math.random()*1000)}
+                ]
+            } ];
+    dataArray =  [
+        {
+            type:"local",
+            name:"本地人口",
+            data:[
+                {name: '东城区',value: 0.2},
+                {name: '西城区',value: 0.2},
+                {name: '崇文区',value:  0.2},
+                {name: '宣武区',value: 0.1},
+                {name: '朝阳区',value: 0.1},
+                {name: '丰台区',value: 0.2},
+                {name: '石景山区',value:  0.2},
+                {name: '海淀区',value:  0.2},
+                {name: '门头沟区',value:  0.2},
+                {name: '房山区',value:  0.2},
+                {name: '通州区',value:  0.2},
+                {name: '顺义区',value:  0.2},
+                {name: '昌平区',value:  0.2},
+                {name: '大兴区',value:  0.2},
+                {name: '怀柔区',value:  0.2},
+                {name: '平谷区',value:  0.2},
+                {name: '密云县',value:  0.2},
+                {name: '延庆县',value:  0.2}
+            ]
+        }
+    ];
+    console.log(rawData);
+    var map4 = new ESmile.DistrictMap((new ESmile.MapData(rawData)).getGeometriesData(), (new ESmile.Data(dataArray[0])).getData(), container);
+    graphic.add(map4);
+  //  graphic.add(map2);
+   // map1.add(map2);
+    var chart = {
+        _camera: new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 ),
+                /*new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -1000, 10000 ),*/
+        _graphic:graphic,
+     //   _width:window.innerWidth,
+     //   _height:window.innerWidth,
+        _scene: new THREE.Scene()
+    };
+
+   // map1.addOneTimeEventListener("click", function(){console.log("haha!!!")});
+    init();
+    animate();
+
+    function init() {
+
+
+
+
+
+        camera = chart._camera;
+        camera.position.set(0,0,15);
+        scene = chart._scene;
+
+        var light = new THREE.DirectionalLight( 0xffffff, 1 );
+        light.position.set( 1, 1, 1 ).normalize();
+        scene.add( light );
+
+        // var map = new ESmile.TestMap();
+       /* scene.scale.x = 20;
+        scene.scale.y = 20;
+        scene.scale.z = 20;*/
+        // scene.add(map1.root);
+        //scene.add(map2.root);
+        function graphicToScene(graphicObject, scene) {
+            console.log("****************************");
+            console.log(graphicObject.root);
+
+            scene.add(graphicObject.root);
+            for (var i = 0, length = graphicObject.children.length; i < length; i++) {
+                console.log("zx")
+                graphicToScene(graphicObject.children[i], scene);
+            }
+        };
+
+        console.log(map4)
+        graphicToScene(chart._graphic, scene );
+        var _light = new THREE.AmbientLight(0xcccccc);
+        var light1 = new THREE.DirectionalLight( 0xeeeeee );
+        var light2 = new THREE.DirectionalLight( 0xeeeeee );
+        var light3 = new THREE.DirectionalLight( 0xeeeeee );
+        var light4 = new THREE.DirectionalLight( 0xeeeeee );
+        light1.position.set( 100, 100,50);
+        light2.position.set(100, -100,50);
+        light3.position.set( -100, 100,50);
+        light4.position.set( -100, -100,50);
+        _light.add(light4);
+
+
+
+
+
+        scene.add(_light);
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( 0xf0f0f0 );
+        renderer.setSize( window.innerWidth,  window.innerHeight );
+        renderer.sortObjects = false;
+        container.appendChild(renderer.domElement);
+        var ec = new ESmile.EventCenter(chart, renderer.domElement);
+    //   var _control = new THREE.OrbitControls(camera, renderer.domElement);
+
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        document.addEventListener( 'click', onDocumentMouseClick, false );
+        //
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+    }
+
+    function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    function onDocumentMouseMove( event ) {
+
+        event.preventDefault();
+
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+
+
+
+    }
+
+
+    function onDocumentMouseClick( event ) {
+
+        event.preventDefault();
+
+        console.log("***mouse.x:%f mouse.y:%f", mouse.x, mouse.y );
+        console.log("***camera" );
+        console.log(camera.position );
+        console.log("clientX:%d, clientY:%d", event.clientX, event.clientY);
+        console.log("innerWidth:%d, innerHeight:%d", window.innerWidth , window.innerHeight);
+        console.log(event.clientX, event.clientY);
+        vector = new THREE.Vector3( mouse.x, mouse.y, 1 ).unproject( camera );
+
+
+        raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+
+        var intersects = raycaster.intersectObject( scene ,true);
+        console.log(intersects);
+
+    }
+    //
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+        render();
+
+
+    }
+    var count = 1;
+    function render() {
+
+
+        renderer.render( scene, chart._camera );
+
+    }
+
+</script>
+<script> 
+/**
+ * Copyright (C) 2011 by Paul Lewis
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var AEROTWIST = AEROTWIST || {};
+AEROTWIST.Surface = new function()
+{
+	// internal vars
+	var camera,
+		scene,
+		renderer		= null,
+		canvas			= null,
+		context			= null,
+		$container 		= $('#container'),
+		width			= $container.width(),
+		height			= $container.height(),
+		$gui			= $('#gui'),
+		vars			= [],
+		projector		= new THREE.Projector(),
+		center			= new THREE.Vector3(),
+		orbitCamera		= true,
+		orbitValue		= 0,
+		lastRainDrop	= 0,
+		image			= null,
+		running 		= true,
+		
+	// core objects
+		surface			= null,
+		surfaceVerts	= [],
+		raindrops		= [],
+		
+	// constants
+		DAMPEN			= .9,
+		AGGRESSION		= 400,
+		DEPTH 			= 500,
+		NEAR 			= 1,
+		FAR 			= 10000,
+		X_RESOLUTION	= 20,
+		Y_RESOLUTION	= 20,
+		SURFACE_WIDTH	= 400,
+		SURFACE_HEIGHT	= 400,
+		DROP_RATE		= 200,
+		fin 			= true;
+	
+	this.pause = function() {
+		running = false;
+	}
+	
+	this.play = function() {
+		if(!running) {
+			running = true;
+			update();
+		}
+	}
+	
+	/**
+	 * Initializes the experiment and kicks
+	 * everything off. Yay!
+	 */
+	this.init = function()
+	{
+		// stop the user clicking
+		document.onselectstart		= function(){ return false; };
+		
+		// set up our initial vars
+		vars["magnitude"]			= 30;
+		vars["orbitSpeed"]			= 0.001;
+		vars["orbit"]				= true;
+		vars["wireframeOpacity"]	= 1;
+		vars["raindrops"]			= true;
+		vars["elasticity"]			= 0.001;
+		
+		// add listeners
+		addEventListeners();
+		
+		// create our stuff
+		if(createRenderer())
+		{
+			createObjects();
+			addLights();
+		
+			// start rendering, which will
+			// do nothing until the image is dropped
+			update();
+		
+			$gui.addClass('live');
+		}
+		else
+		{
+			$('html').removeClass('webgl').addClass('no-webgl');
+		}
+	};
+	
+	/**
+	 * Handles when a file is dropped by
+	 * the user onto the container
+	 */
+	function dropFile(event)
+	{
+		// stop the browser doing
+		// it's normal thing of going
+		// to the item
+		event.stopPropagation();
+		event.preventDefault();
+		
+		// query what was dropped
+		var files = event.dataTransfer.files;
+		
+		// if we have something
+		if(files.length) {
+			handleFile(files[0]);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Handles the uploaded file
+	 */
+	function handleFile(file)
+	{
+		var fileReader 			= new FileReader();
+		fileReader.onloadend	= fileUploaded;
+		fileReader.readAsDataURL(file);
+	}
+	
+	/**
+	 * File upload handled
+	 */
+	function fileUploaded(event)
+	{		
+		// check it's an image
+		if(event.target.result.match(/^data:image/))
+		{
+		    // create a new image
+			image 		= document.createElement('img');
+			image.src 	= event.target.result;
+			
+			// give the browser chance to
+			// create the image object
+			setTimeout(function(){
+				
+				// split the image
+				updatePlane();
+				
+			}, 100);
+		}
+		else
+		{
+			// time to whinge
+			alert("Umm, images only? ... Yeah");
+		}
+	}
+	
+	/**
+	 * Simple handler function for 
+	 * the events we don't care about
+	 */
+	function cancel(event)
+	{
+		if(event.preventDefault)
+			event.preventDefault();
+		
+		return false;
+	}
+	
+	/**
+	 * Adds some basic lighting to the
+	 * scene. Only applies to the centres
+	 */
+	function addLights()
+	{
+		// point
+		pointLight = new THREE.PointLight( 0xFFFFFF );
+		pointLight.position.x = 10;
+		pointLight.position.y = 100;
+		pointLight.position.z = 10;
+		scene.addLight( pointLight );
+	}
+	
+	/**
+	 * Creates the objects we need
+	 */
+	function createObjects()
+	{
+		var planeMaterial 		= new THREE.MeshLambertMaterial({color: 0xFFFFFF, map: ImageUtils.loadTexture("images/72lions_sterik.jpg"), shading: THREE.SmoothShading}),
+			planeMaterialWire 	= new THREE.MeshLambertMaterial({color: 0xFFFFFF, wireframe:true});
+		
+		surface 		= new THREE.Mesh(new Plane(SURFACE_WIDTH, SURFACE_HEIGHT, X_RESOLUTION, Y_RESOLUTION), [planeMaterial, planeMaterialWire]);
+		surface.rotation.x 		= -Math.PI * .5;
+		surface.overdraw		= true;
+		scene.addChild(surface);
+		
+		// go through each vertex
+		surfaceVerts 	= surface.geometry.vertices;
+		sCount			= surfaceVerts.length;
+		
+		// three.js creates the verts for the
+		// mesh in x,y,z order I think
+		while(sCount--)
+		{
+			var vertex 		= surfaceVerts[sCount];
+			vertex.springs 	= [];
+			vertex.velocity = new THREE.Vector3();
+			
+			// connect this vertex to the ones around it
+			if(vertex.position.x > (-SURFACE_WIDTH * .5))
+			{
+				// connect to left
+				vertex.springs.push({start:sCount, end:sCount-1});
+			}
+			
+			if(vertex.position.x < (SURFACE_WIDTH * .5))
+			{
+				// connect to right
+				vertex.springs.push({start:sCount, end:sCount+1});
+			}
+			
+			if(vertex.position.y < (SURFACE_HEIGHT * .5))
+			{
+				// connect above
+				vertex.springs.push({start:sCount, end:sCount-(X_RESOLUTION+1)});
+			}
+
+			if(vertex.position.y > (-SURFACE_HEIGHT * .5))
+			{
+				// connect below
+				vertex.springs.push({start:sCount, end:sCount+(X_RESOLUTION+1)});
+			}
+		}
+	}
+	
+	/**
+	 * Creates the WebGL renderer
+	 */
+	function createRenderer()
+	{
+		var ok = false;
+		
+		try
+		{
+			renderer 					= new THREE.WebGLRenderer();
+			camera 						= new THREE.Camera(45, width / height, NEAR, FAR);
+			scene 						= new THREE.Scene();
+			canvas						= document.createElement('canvas');
+			canvas.width				= SURFACE_WIDTH;
+			canvas.height				= SURFACE_HEIGHT;
+			context						= canvas.getContext('2d');
+			
+			context.fillStyle = "#000000";
+			context.beginPath();
+			context.fillRect(0,0,SURFACE_WIDTH,SURFACE_HEIGHT);
+			context.closePath();
+			context.fill();
+	
+		
+		    // position the camera
+			camera.position.y 			= 220;
+			camera.position.z			= DEPTH;
+		    
+		    // start the renderer
+		    renderer.setSize(width, height);
+		    $container.append(renderer.domElement);
+		
+		    ok = true;
+		}
+		catch(e)
+		{
+			ok = false;
+		}
+		
+		return ok;
+	}
+	
+	/**
+	 * Sets up the event listeners for DnD, the GUI
+	 * and window resize
+	 */
+	function addEventListeners()
+	{
+		// window event
+		$(window).resize(callbacks.windowResize);
+		$(window).keydown(callbacks.keyDown);
+		
+		// click handler
+		$(document.body).mousedown(callbacks.mouseDown);
+		$(document.body).mouseup(callbacks.mouseUp);
+		$(document.body).click(callbacks.mouseClick);
+		
+		var container = $container[0];
+		container.addEventListener('dragover', cancel, false);
+		container.addEventListener('dragenter', cancel, false);
+		container.addEventListener('dragexit', cancel, false);
+		container.addEventListener('drop', dropFile, false);
+		
+		// GUI events
+		$(".gui-set a").click(callbacks.guiClick);
+		$(".gui-set a.default").trigger('click');
+	}
+	
+	function updatePlane()
+	{
+		var ratio				= 1 / Math.max(image.width/SURFACE_WIDTH, image.height/SURFACE_HEIGHT);
+		var scaledWidth			= image.width * ratio;
+		var scaledHeight		= image.height * ratio;
+		context.drawImage(image,
+							0,0,image.width,image.height,
+							(SURFACE_WIDTH - scaledWidth) * .5, (SURFACE_HEIGHT - scaledHeight) *.5, scaledWidth, scaledHeight);
+	
+		var newPlaneMaterial 	= new THREE.MeshLambertMaterial({color: 0xFFFFFF, map: ImageUtils.loadTexture(canvas.toDataURL("image/png")), shading: THREE.SmoothShading});
+		surface.materials[0] 	= newPlaneMaterial;
+	}
+	
+	/**
+	 * Updates the velocity and position
+	 * of the particles in the view
+	 */
+	function update()
+	{
+		orbitValue 			+= vars["orbit"] ? vars["orbitSpeed"] : 0;
+		camera.position.x 	= Math.sin(orbitValue) * DEPTH;
+		camera.position.z 	= Math.cos(orbitValue) * DEPTH;
+		camera.update();
+		
+		if(vars["raindrops"])
+		{
+			if(new Date().getTime() - lastRainDrop > DROP_RATE)
+			{
+				var raindropMaterial 	= new THREE.MeshBasicMaterial({color:0xFFFFFF, opacity: 0.7});
+				var raindrop 			= new THREE.Mesh(new Sphere(2,2,8,8), raindropMaterial);
+				raindrop.velocity 		= new THREE.Vector3(0,0,0);
+				raindrop.position		= new THREE.Vector3(SURFACE_WIDTH * .5 - Math.random() * SURFACE_WIDTH,600,SURFACE_HEIGHT * .5 - Math.random() * SURFACE_HEIGHT);
+				raindrops.push(raindrop);
+				scene.addChild(raindrop);
+				
+				lastRainDrop = new Date().getTime();
+			}
+		}
+		
+		var r = raindrops.length;
+		while(r--)
+		{
+			var raindrop = raindrops[r];
+			raindrop.velocity.addSelf(new THREE.Vector3(0,-0.3,0));
+			raindrop.position.addSelf(raindrop.velocity);
+			
+			if(raindrop.position.y < 0)
+			{
+				scene.removeChild(raindrop);
+				raindrops.splice(r,1);
+				
+				var xVal	= Math.floor((raindrop.position.x / SURFACE_WIDTH) * X_RESOLUTION),
+				yVal		= Math.floor((raindrop.position.z / SURFACE_HEIGHT) * Y_RESOLUTION);
+			
+				xVal 		+= X_RESOLUTION * .5;
+				yVal 		+= Y_RESOLUTION * .5;
+	
+				index		= (yVal * (X_RESOLUTION + 1)) + xVal;
+				
+				surfaceVerts[index].velocity.z += vars["magnitude"] * 5;
+			}
+		}
+		
+		surface.materials[1].opacity = vars["wireframeOpacity"];
+		
+		var v = surfaceVerts.length;
+		while(v--) {
+			var vertex			= surfaceVerts[v],
+				acceleration 	= new THREE.Vector3(0, 0, -vertex.position.z * vars["elasticity"]),
+				springs			= vertex.springs,
+				s				= springs.length;
+			
+			vertex.velocity.addSelf(acceleration);
+			
+			while(s--) {
+				var spring 		= springs[s],
+					extension	= surfaceVerts[spring.start].position.z - surfaceVerts[spring.end].position.z;
+				
+				acceleration 	= new THREE.Vector3(0, 0, extension * vars["elasticity"] * 50);
+				surfaceVerts[spring.end].velocity.addSelf(acceleration);
+				surfaceVerts[spring.start].velocity.subSelf(acceleration);
+			}
+
+			vertex.position.addSelf(vertex.velocity);
+			
+			vertex.velocity.multiplyScalar(DAMPEN);
+		}
+		
+		surface.geometry.computeFaceNormals(true);
+		surface.geometry.__dirtyVertices = true;
+		surface.geometry.__dirtyNormals = true;
+		
+		// set up a request for a render
+		requestAnimationFrame(render);
+	}
+	
+	/**
+	 * Renders the current state
+	 */
+	function render()
+	{
+		// only render
+		if(renderer) {
+			renderer.render(scene, camera);
+		}
+		
+		// set up the next frame
+		if(running) {
+			update();
+		}
+	}
+	
+	function disturbSurface(event, magnitude)
+	{
+		if(running) {
+			var mouseX	= event.offsetX || (event.clientX - 220);
+			var mouseY	= event.offsetY || event.clientY;
+			
+			var vector 	= new THREE.Vector3((mouseX / width) * 2 - 1, -(mouseY / height) * 2 + 1, 0.5);
+			projector.unprojectVector(vector, camera);
+			
+			var ray 		= new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize()),
+				intersects	= ray.intersectObject(surface);
+			
+			// if the ray intersects with the
+			// surface work out where
+			if(intersects.length) {
+				var iPoint 	= intersects[0].point,
+				 	xVal	= Math.floor((iPoint.x / SURFACE_WIDTH) * X_RESOLUTION),
+					yVal	= Math.floor((iPoint.z / SURFACE_HEIGHT) * Y_RESOLUTION);
+				
+				xVal 		+= X_RESOLUTION * .5;
+				yVal 		+= Y_RESOLUTION * .5;
+				
+				index		= (yVal * (X_RESOLUTION + 1)) + xVal;
+				
+				if(index >= 0 && index < surfaceVerts.length) {
+					surfaceVerts[index].velocity.z += magnitude;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Our internal callbacks object - a neat
+	 * and tidy way to organise the various
+	 * callbacks in operation.
+	 */
+	callbacks = {
+		mouseDown:function() {
+			document.addEventListener('mousemove', callbacks.mouseMove, false);
+		},
+		mouseMove:function(event) {
+			disturbSurface(event, vars["magnitude"]);
+		},
+		mouseClick: function(event) {
+			disturbSurface(event, vars["magnitude"] * 5);
+		},
+		mouseUp:function() {
+			document.removeEventListener('mousemove', callbacks.mouseMove, false);
+		},
+		guiClick:function() {
+			var $this 	= $(this),
+				varName	= $this.data("guivar"),
+				varVal	= $this.data("guival");
+			if(vars[varName] !== null) {
+				vars[varName] = varVal;
+			}
+			
+			$this.siblings().addClass('disabled');
+			$this.removeClass('disabled');
+			
+			return false;
+		},
+		windowResize: function() {
+			
+			if(camera)
+			{
+				width			= $container.width(),
+				height			= $container.height(),
+				camera.aspect 	= width / height,
+				renderer.setSize(width, height);
+			
+				camera.updateProjectionMatrix();
+			}
+		},
+		keyDown: function(event) {
+			
+			if(camera)
+			{
+				switch(event.keyCode)
+				{
+				case 37: // Left
+						orbitValue -= 0.1;
+						break;
+						
+				case 39: // Right
+						orbitValue += 0.1;
+						break;
+						
+				}
+				camera.update();
+			}
+		}
+	};
+};
+
+// Surfaceize!
+$(document).ready(function(){
+	
+	if(Modernizr.webgl) {
+		// Go!
+		AEROTWIST.Surface.init();
+	}
+});</script>
+</body>
+</html>

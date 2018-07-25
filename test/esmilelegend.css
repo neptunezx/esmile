@@ -1,0 +1,46 @@
+.esmile-tooltip{
+    position:absolute;
+    float:right;
+    z-index: 1;
+}
+.esmile-canvas{
+    z-index: 0;
+    position: absolute;
+    top:0px;
+    right:0px
+}
+.esmile-legend{
+    z-index: 1;
+    position: absolute;
+    overflow: auto;
+}
+.esmile-legend-div{
+    float:left;
+    margin:0px 3px;
+    height:20px;
+}
+.esmile-legend-div:hover {
+
+    color: #ff001b;
+    opacity: 0.8;
+}
+
+.esmile-legend-div a:hover {
+
+    color: #ff001b;
+    opacity: 0.8;
+}
+
+.esmile-legend-flag{
+    width:20px;
+    height:10px;
+    margin:3px;
+    float:left;
+}
+.esmile-legend-title{
+    margin:1px 3px 0px;
+    float:left;
+    font-size: 12px;
+    color:#1111DD
+}
+

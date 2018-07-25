@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - loaders - OBJ MTL loader</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+				background-color:#cce0ff;
+			}
+			#info {
+				font:12px 微软雅黑, Tahoma, Verdana, Arial, Sans-Serif;
+				color: black;
+				position: absolute;
+				left: 70%;
+				top: 10px;
+				width: 28%;
+				bottom:80%;
+				//text-align: center;
+				z-index: 100;
+				display:block;
+				Opacity:0.7;
+			}
+			#info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
+		</style>
+	</head>
+
+	<body>
+		<div id="info"> 
+			<!--h1 id="id"></h1-->
+			<div>
+				<h3 id="name"></h3>
+				<!--hr size=1 style="color: blue;border-style:dashed ;width:100%"></hr-->
+				<h3 id="plot"></h3>
+				<!--hr size=1 style="color: blue;border-style:dashed ;width:100%"></hr-->
+				<h3 id="level"></h3>
+				<!--hr size=1 style="color: blue;border-style:dashed ;width:100%"></hr-->
+				<h3 id="buildage"></h3>
+				<!--hr size=1 style="color: blue;border-style:dashed ;width:100%"></hr-->
+				<h3 id="peopleState"></h3>
+				<!--hr size=1 style="color: blue;border-style:dashed ;width:100%"></hr-->
+				<h3 id="address"></h3>
+				<!--hr size=1 style="color: blue;border-style:dashed ;width:100%"></hr-->
+			</div>
+		</div>
+			
+		<script src="js/three.min.js"></script>
+
+		<script src="js/DDSLoader.js"></script>
+		<script src="js/MTLLoader.js"></script>
+		<script src="js/OBJMTLLoader.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/OrbitControls.js"></script>
+
+		<script>
+			
+
+			var container, orbitControls,helper,cameraTarget;
+			var parameters = "nihao";
+
+			var camera, scene, renderer,object,timer=704768795;
+
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth*3/8;
+			var windowHalfY = window.innerHeight/2;
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			init();
+			animate();		
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 85, (window.innerWidth*3)/(4*window.innerHeight), 1, 200000 );
+				camera.position.z =50000;
+				camera.position.y = 10000; 
+				camera.position.x = -25000;
+				cameraTarget = new THREE.Vector3( 0, -1500, 0 );
+
+				
+				
+				// scene
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.Fog( 0xcce0ff, 5000000, 10000000 );
+				var ambient = new THREE.AmbientLight( 0x666666 );
+				//scene.add( ambient );
+ 				
+
+				var light = new THREE.DirectionalLight( 0xeeeeee, 2.25 );
+				light.position.set( 0, 100000, 50000 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0xeeeeee, 2.25 );
+				light.position.set( 0, 100000, -50000 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0xeeeeee, 1 );
+				light.position.set( -100000, 100000, 0 );
+				scene.add( light );
+				
+				light = new THREE.DirectionalLight( 0xeeeeee, 1 );
+				light.position.set( 100000, 100000, 0 );
+				scene.add( light );
+				
+
+				// model
+				
+				THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+				
+				
+				//var loader = new THREE.OBJMTLLoader();
+				var loader = new THREE.JSONLoader();
+				var callbackFemale = function ( geometry, materials ) { createScene( geometry, materials, -80, FLOOR, 50, 0 ) };
+				loader.load( "house1.js",function ( geometry, materials ) { 
+					object = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+					object.position.y = -35000;
+					object.position.x = 35000;
+					object.position.z= 23500;
+					//object.rotation.y=- Math.PI / 2;
+					scene.add( object );
+					
+				});
+				/*loader.load( 'house.js', 'house.mtl', function ( object ) {
+
+					object.position.y = -30000;
+					object.position.x = 40000;
+					object.position.z= 20000;
+					scene.add( object );
+
+				} );*/
+				
+				//
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth*3/4, window.innerHeight );
+				renderer.setClearColor( scene.fog.color );
+				//renderer.setClearColor( "white" );
+				container.appendChild( renderer.domElement );
+				orbitControls = new THREE.OrbitControls(camera);
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+				//
+				document.addEventListener( 'keydown', keyPressed, false );
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth*3/8 ;
+				windowHalfY = window.innerHeight/2 ;
+
+				camera.aspect = (window.innerWidth*3 )/ (4*window.innerHeight);
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth*3/4, window.innerHeight);
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				mouseX = ( event.clientX - windowHalfX )*3/ 8;
+				mouseY = ( event.clientY - windowHalfY ) / 2;
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				render();
+
+			}
+
+			function keyPressed(event){
+				//alert(event.keyCode);
+				console.log(camera.position.x+"||"+camera.position.z);
+				
+				console.log(timer);
+				if (event.keyCode === 39) { // 右
+					timer += .08;
+					console.log(Math.cos( timer)+"||"+Math.sin( timer));
+					camera.position.x = 55000 * Math.cos( timer);
+					camera.position.z = 55000 * Math.sin( timer );
+					console.log(camera.position.x+"||"+camera.position.z);
+
+				}
+				if (event.keyCode === 37) { //左
+					timer -= .08;
+					camera.position.x = 55000 * Math.cos( timer);
+					camera.position.z = 55000 * Math.sin( timer);
+
+					
+				}
+				camera.lookAt( cameraTarget );
+				//render();
+			}
+			
+			function render() {
+				camera.lookAt( cameraTarget );
+				renderer.render( scene, camera );
+
+			}
+
+		function GetQueryString(parameterUrl)
+				{
+				     var reg = new RegExp("(^|&)"+ parameterUrl +"=([^&]*)(&|$)");
+				     var r = window.location.search.substr(1).match(reg);
+				     if(r!=null)return  unescape(r[2]); return null;
+				};
+
+
+		//document.getElementById("id").innerHTML=GetQueryString("id");// decodeURIComponent("上海市")
+		//document.getElementById("name").innerHTML=GetQueryString("name");
+		
+		document.getElementById("name").innerHTML="名称：百环家园12#楼";
+		document.getElementById("plot").innerHTML="所属小区：百环家园";
+		document.getElementById("level").innerHTML="楼层：20";
+		document.getElementById("buildage").innerHTML="建筑时间：2003";
+		document.getElementById("peopleState").innerHTML="人口分布：共1500人，其中老人480人，儿童360人";
+		document.getElementById("address").innerHTML="地址：北京市朝阳区东三环中路21号";
+		
+		
+		
+		function GetRequest() {
+  
+		  var url = location.search; //获取url中"?"符后的字串
+		   var theRequest = new Object();
+		   if (url.indexOf("?") != -1) {
+		      var str = url.substr(1);
+		      strs = str.split("&");
+		      for(var i = 0; i < strs.length; i ++) {
+		         theRequest[strs[i].split("=")[0]]=(strs[i].split("=")[1]);
+		      }
+		   }
+		   return theRequest;
+		}
+		
+		
+		var Request = new Object();
+		Request = GetRequest();
+
+
+		//document.getElementById("name").innerHTML=Request["name"];
+	
+		
+		
+		
+
+		</script>
+		
+		
+
+	</body>
+</html>

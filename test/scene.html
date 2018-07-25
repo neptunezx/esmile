@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <script src="../source/three.min.js"></script>
+    <script src="../library/three.js/examples/js/controls/OrbitControls.js"></script>
+    <script src="../source/ESmile.js"></script>
+    <script src="../source/charts/Chart.js"></script>
+    <script src="../source/charts/DistrictMapChart.js"></script>
+    <script src="../source/charts/FlowMapChart.js"></script>
+
+    <script src="../source/core/Event.js"></script>
+    <script src="../source/core/EventDispatcher.js"></script>
+    <script src="../source/utils/Environment.js"></script>
+    <script src="../source/charts/EventCenter.js"></script>
+    <script src="../source/components/Component.js"></script>
+    <script src="../source/graphics/GraphicObject.js"></script>
+    <script src="../source/utils/StaticText.js"></script>
+    <script src="../source/graphics/SphereCluster.js"></script>
+    <script src="../source/utils/Text.js"></script>
+    <script src="../source/utils/SpriteText.js"></script>
+    <script src="../source/components/ToolBox.js"></script>
+    <script src="../source/components/ToolTip.js"></script>
+    <script src="../source/components/Legend.js"></script>
+    <script src="../source/graphics/Title.js"></script>
+    <script src="../../code/library/d3.js/d3.js"></script>
+    <script src="../source/graphics/Shape.js"></script>
+    <script src="../source/graphics/PolygonColumn.js"></script>
+    <script src="../source/graphics/DistrictMap.js"></script>
+    <script src="../source/graphics/FlowMap.js"></script>
+    <script src="../source/utils/Utils.js"></script>
+    <script src="../source/utils/MapData.js"></script>
+    <script src="../source/utils/Data.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <style>
+        #chart{
+            height:800px;
+            width:1200px;
+            position: relative;
+        }
+    </style>
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec2 vUv;
+        uniform float vX;
+        uniform float vY;
+        void main()
+        {
+            vUv = uv;
+           gl_Position = vec4( position, 1 )+vec4(vX,vY,0,0);
+        }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-vertex">
+        uniform sampler2D baseTexture;
+        uniform float baseSpeed;
+        uniform sampler2D noiseTexture;
+        uniform float noiseScale;
+        uniform float alpha;
+        uniform float time;
+
+        varying vec2 vUv;
+        void main()
+        {
+            //vec2 uvTimeShift = vUv + vec2( -0.7, 1 ) * time * baseSpeed;
+            //vec4 noiseGeneratorTimeShift = texture2D( baseTexture, uvTimeShift );
+            //vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+            vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( 0,0);
+            vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift );
+
+            gl_FragColor = baseColor;
+
+
+        }
+    </script>
+</head>
+<body>
+<div id="chart">
+</div>
+
+<script>
+    var cities;
+    var data =
+            [{
+                type:"local",
+                name:"本地人口",
+                data:[
+                    {name: '北京',value: Math.round(Math.random()*500)},{name: '天津',value: Math.round(Math.random()*500)},{name: '上海',value: Math.round(Math.random()*500)},{name: '重庆',value: Math.round(Math.random()*500)},{name: '河北',value: Math.round(Math.random()*500)},
+                    {name: '河南',value: Math.round(Math.random()*500)},{name: '云南',value: Math.round(Math.random()*500)},{name: '辽宁',value: Math.round(Math.random()*500)},{name: '黑龙江',value: Math.round(Math.random()*500)},{name: '湖南',value: Math.round(Math.random()*500)},
+                    {name: '安徽',value: Math.round(Math.random()*500)},{name: '山东',value: Math.round(Math.random()*500)},{name: '新疆',value: Math.round(Math.random()*500)},{name: '江苏',value: Math.round(Math.random()*500)},{name: '浙江',value: Math.round(Math.random()*500)},
+                    {name: '江西',value: Math.round(Math.random()*500)},{name: '湖北',value: Math.round(Math.random()*500)},{name: '广西',value: Math.round(Math.random()*500)},{name: '甘肃',value: Math.round(Math.random()*500)},{name: '山西',value: Math.round(Math.random()*500)},
+                    {name: '内蒙古',value: Math.round(Math.random()*500)},{name: '陕西',value: Math.round(Math.random()*500)},{name: '吉林',value: Math.round(Math.random()*500)},{name: '福建',value: Math.round(Math.random()*500)},{name: '贵州',value: Math.round(Math.random()*500)},
+                    {name: '广东',value: Math.round(Math.random()*500)},{name: '青海',value: Math.round(Math.random()*500)},{name: '西藏',value: Math.round(Math.random()*500)},{name: '四川',value: Math.round(Math.random()*500)},{name: '宁夏',value: Math.round(Math.random()*500)},
+                    {name: '海南',value: Math.round(Math.random()*500)},{name: '台湾',value: Math.round(Math.random()*500)},{name: '香港',value: Math.round(Math.random()*500)},{name: '澳门',value: Math.round(Math.random()*500)}
+                ]
+            }/*,{
+             type:"flow",
+             name:"常住人口",
+             data:[
+             {name: '北京',value: Math.round(Math.random()*500)},{name: '天津',value: Math.round(Math.random()*500)},{name: '上海',value: Math.round(Math.random()*500)},{name: '重庆',value: Math.round(Math.random()*500)},{name: '河北',value: Math.round(Math.random()*500)},
+             {name: '河南',value: Math.round(Math.random()*500)},{name: '云南',value: Math.round(Math.random()*500)},{name: '辽宁',value: Math.round(Math.random()*500)},{name: '黑龙江',value: Math.round(Math.random()*500)},{name: '湖南',value: Math.round(Math.random()*500)},
+             {name: '安徽',value: Math.round(Math.random()*500)},{name: '山东',value: Math.round(Math.random()*500)},{name: '新疆',value: Math.round(Math.random()*500)},{name: '江苏',value: Math.round(Math.random()*500)},{name: '浙江',value: Math.round(Math.random()*500)},
+             {name: '江西',value: Math.round(Math.random()*500)},{name: '湖北',value: Math.round(Math.random()*500)},{name: '广西',value: Math.round(Math.random()*500)},{name: '甘肃',value: Math.round(Math.random()*500)},{name: '山西',value: Math.round(Math.random()*500)},
+             {name: '内蒙古',value: Math.round(Math.random()*500)},{name: '陕西',value: Math.round(Math.random()*500)},{name: '吉林',value: Math.round(Math.random()*500)},{name: '福建',value: Math.round(Math.random()*500)},{name: '贵州',value: Math.round(Math.random()*500)},
+             {name: '广东',value: Math.round(Math.random()*500)},{name: '青海',value: Math.round(Math.random()*500)},{name: '西藏',value: Math.round(Math.random()*500)},{name: '四川',value: Math.round(Math.random()*500)},{name: '宁夏',value: Math.round(Math.random()*500)},
+             {name: '海南',value: Math.round(Math.random()*500)},{name: '台湾',value: Math.round(Math.random()*500)},{name: '香港',value: Math.round(Math.random()*500)},{name: '澳门',value: Math.round(Math.random()*500)}
+             ]
+             },{
+             type:"xx",
+             name:"XX人口",
+             data:[
+             {name: '北京',value: Math.round(Math.random()*500)},{name: '天津',value: Math.round(Math.random()*500)},{name: '上海',value: Math.round(Math.random()*500)},{name: '重庆',value: Math.round(Math.random()*500)},{name: '河北',value: Math.round(Math.random()*500)},
+             {name: '河南',value: Math.round(Math.random()*500)},{name: '云南',value: Math.round(Math.random()*500)},{name: '辽宁',value: Math.round(Math.random()*500)},{name: '黑龙江',value: Math.round(Math.random()*500)},{name: '湖南',value: Math.round(Math.random()*500)},
+             {name: '安徽',value: Math.round(Math.random()*500)},{name: '山东',value: Math.round(Math.random()*500)},{name: '新疆',value: Math.round(Math.random()*500)},{name: '江苏',value: Math.round(Math.random()*500)},{name: '浙江',value: Math.round(Math.random()*500)},
+             {name: '江西',value: Math.round(Math.random()*500)},{name: '湖北',value: Math.round(Math.random()*500)},{name: '广西',value: Math.round(Math.random()*500)},{name: '甘肃',value: Math.round(Math.random()*500)},{name: '山西',value: Math.round(Math.random()*500)},
+             {name: '内蒙古',value: Math.round(Math.random()*500)},{name: '陕西',value: Math.round(Math.random()*500)},{name: '吉林',value: Math.round(Math.random()*500)},{name: '福建',value: Math.round(Math.random()*500)},{name: '贵州',value: Math.round(Math.random()*500)},
+             {name: '广东',value: Math.round(Math.random()*500)},{name: '青海',value: Math.round(Math.random()*500)},{name: '西藏',value: Math.round(Math.random()*500)},{name: '四川',value: Math.round(Math.random()*500)},{name: '宁夏',value: Math.round(Math.random()*500)},
+             {name: '海南',value: Math.round(Math.random()*500)},{name: '台湾',value: Math.round(Math.random()*500)},{name: '香港',value: Math.round(Math.random()*500)},{name: '澳门',value: Math.round(Math.random()*500)}
+             ]
+             }*/];
+
+   var chart;
+
+
+
+
+    loadData(function(){
+        console.log(cities);
+
+        var chart = new ESmile.FlowMapChart(document.getElementById("chart"),{map:cities,data:data});
+        chart.render();
+    });
+
+
+
+</script>
+</body>
+</html>

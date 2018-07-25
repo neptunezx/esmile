@@ -1,0 +1,67 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2014-12-16, 15:59:30
+    Author     : LENOVO
+*/
+
+ 
+ 
+.esmile-timeline{
+    position: absolute;
+    left: auto;
+      /*float: left;*/
+    margin: 0px auto;
+    width: 100%;
+    /*top:60px;*/
+    /*margin:0;*/
+    /*padding:0*/
+}
+.esmile-timeline ul{
+    margin-bottom: 0px;
+    padding:0;
+    width:100%;
+    text-align:center;
+    opacity:0.9
+}
+.esmile-timeline li{
+    cursor:pointer;
+    display:inline-block;
+    width:10%;
+    height:40px;     
+    margin-right: 5px;   
+}
+ 
+.esmile-timeline-text {
+    color:#ff5;
+    text-shadow:0 0 7px #550
+}
+.esmile-timeline-selected {
+    color:#ff5;
+    text-shadow:0 0 7px #550
+}
+.esmile-timeline-loaded {
+    color:#eee
+}
+.esmile-timeline-marker{
+    height:5px;
+    background:#333;
+    -webkit-transition:background 1s;
+    transition:background 1s;
+    background:#55acee; 
+}
+.esmile-timeline-text{
+    font-size:.7em;
+    color:#eee;
+    white-space:nowrap;
+    -webkit-transform-origin:center center;
+    transform-origin:center center;
+    -webkit-transform:translate(0,15px) rotate(15deg);
+    transform:translate(0,15px) rotate(15deg);
+    -webkit-transition:color 1s;
+    transition:color 1s
+}
+ 

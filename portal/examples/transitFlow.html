@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../../source/three.min.js"></script>
+    <script src="../../source/OrbitControls.js"></script>
+    <script src="../../source/ESmile.js"></script>
+    <script src="../../source/core/Event.js"></script>
+    <script src="../../source/core/EventDispatcher.js"></script>
+    <script src="../../source/charts/Chart.js"></script>
+    <script src="../../source/utils/Normalizer.js"></script>
+    <script src="../../source/components/Component.js"></script>
+    <script src="../../source/graphics/GraphicObject.js"></script>
+    <script src="../../source/utils/Text.js"></script>
+    <script src="../../source/components/Legend.js"></script>
+    <!--script src="../../source/components/TitleHtml.js"></script-->
+    <script src="../../source/graphics/GlowCurve.js"></script>
+    <script src="../../source/graphics/GlowPoint.js"></script>
+    <script src="../../source/utils/Utils.js"></script>
+    <script src="../../source/utils/IdGenerator.js"></script>
+
+    <script src="transitFlow/jquery.min.js"></script>
+    <script src="transitFlow/flat-ui.min.js"></script>
+    <link href="transitFlow/bootstrap.min.css" rel="stylesheet">
+    <link href="transitFlow/flat-ui.css" rel="stylesheet">
+
+
+    <style>
+
+        .share-label{
+            font-size:12px;
+            float:none;
+            padding-top: 0px;
+            width:55%;
+        }
+        .share ul{
+            padding:5px 8px 10px;
+        }
+        .bootstrap-switch{
+            height:20px;
+            line-height:20px;
+            font-size: 12px;
+            width:70px;
+        }
+        .bootstrap-switch > div > span{
+            line-height: 13px;
+            width:60px;
+        }
+        .bootstrap-switch-handle-off:before{
+            width:20px;
+            height:20px;
+        }
+    </style>
+</head>
+<body>
+<div id="chart">
+</div>
+
+<script type="x-shader/x-vertex" id="v1">
+uniform float amplitude;
+attribute float size;
+attribute vec3 customColor;
+
+varying vec3 vColor;
+
+void main() {
+
+vColor = customColor;
+
+vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+gl_PointSize = size;
+
+gl_Position = projectionMatrix * mvPosition;
+
+}
+</script>
+
+<script type="x-shader/x-fragment" id="f1">
+uniform vec3 color;
+uniform sampler2D texture;
+
+varying vec3 vColor;
+
+void main() {
+
+gl_FragColor = vec4( vColor, 1 );
+gl_FragColor = gl_FragColor * texture2D( texture,  gl_PointCoord);
+
+
+}
+</script>
+<script>
+    var stationData=[
+        {name:"五路",position:[-470,355]},
+        {name:"慈寿寺桥",position:[-465,310]},
+        {name:"西钓鱼台",position:[-440,235]},
+        {name:"航天桥西",position:[-395,235]},
+        {name:"航天桥南",position:[-370,215]},
+        {name:"八一湖",position:[-370,140]},
+        {name:"公主坟北",position:[-370,110]},
+        {name:"公主坟东",position:[-358,75]},
+        {name:"皇亭子",position:[-290,40]},
+        {name:"北京西站",position:[-295,-5]},
+        {name:"小马厂",position:[-195,-10]},
+        {name:"天宁寺桥西",position:[-130,-10]},
+        {name:"广安门北",position:[-100,-50]},
+        {name:"广安门内",position:[-50,-80]},
+        {name:"枣林前街",position:[-35,-143]},
+        {name:"白纸坊",position:[-25,-165]},
+        {name:"南樱桃园路口西",position:[-5,-180]},
+        {name:"半步桥",position:[40,-177]},
+        {name:"自新路口东",position:[90,-175]},
+        {name:"陶然亭公园北门",position:[140,-175]},
+        {name:"太平街",position:[170,-190]},
+        {name:"陶然桥北",position:[170,-210]},
+        {name:"陶然桥东",position:[215,-240]},
+        {name:"沙子口",position:[250,-290]},
+        {name:"木樨园桥北",position:[250,-315]}
+
+
+            ];
+    var flowdata =  [
+
+        {from: '五路', to: '慈寿寺桥', amount: 508},
+        {from: '五路', to: '西钓鱼台', amount:3046},
+        {from: '五路', to: '航天桥西', amount:0},
+        {from: '五路', to: '航天桥南', amount:7189},
+        {from: '五路', to: '八一湖', amount:0},
+        {from: '五路', to: '公主坟北', amount:4324},
+        {from: '五路', to: '公主坟东', amount:1816},
+        {from: '五路', to: '皇亭子', amount:0},
+        {from: '五路', to: '北京西站', amount:1331},
+        {from: '五路', to: '小马厂', amount:2114},
+        {from: '五路', to: '天宁寺桥西', amount:0},
+        {from: '五路', to: '广安门北', amount:2788},
+        {from: '五路', to: '广安门内', amount:1403},
+        {from: '五路', to: '枣林前街', amount:5096},
+        {from: '五路', to: '白纸坊', amount:284},
+        {from: '五路', to: '南樱桃园路口西', amount:0},
+        {from: '五路', to: '半步桥', amount:805},
+        {from: '五路', to: '自新路口东', amount:7271},
+        {from: '五路', to: '陶然亭公园北门', amount:0},
+        {from: '五路', to: '太平街', amount:778},
+        {from: '五路', to: '陶然桥北', amount:3125},
+        {from: '五路', to: '陶然桥东', amount:3743},
+        {from: '五路', to: '沙子口', amount:2811},
+        {from: '五路', to: '木樨园桥北', amount:5491},
+        {from: '慈寿寺桥', to: '五路', amount:12},
+        {from: '慈寿寺桥', to: '西钓鱼台', amount:613},
+        {from: '慈寿寺桥', to: '航天桥西', amount:0},
+        {from: '慈寿寺桥', to: '航天桥南', amount:2261},
+        {from: '慈寿寺桥', to: '八一湖', amount:1280},
+        {from: '慈寿寺桥', to: '公主坟北', amount:0},
+        {from: '慈寿寺桥', to: '公主坟东', amount:0},
+        {from: '慈寿寺桥', to: '皇亭子', amount:1176},
+        {from: '慈寿寺桥', to: '北京西站', amount:3263},
+        {from: '慈寿寺桥', to: '小马厂', amount:2139},
+        {from: '慈寿寺桥', to: '天宁寺桥西', amount:3790},
+        {from: '慈寿寺桥', to: '广安门北', amount:1364},
+        {from: '慈寿寺桥', to: '广安门内', amount:3464},
+        {from: '慈寿寺桥', to: '枣林前街', amount:407},
+        {from: '慈寿寺桥', to: '白纸坊', amount:5894},
+        {from: '慈寿寺桥', to: '南樱桃园路口西', amount:4529},
+        {from: '慈寿寺桥', to: '半步桥', amount:3284},
+        {from: '慈寿寺桥', to: '自新路口东', amount:5231},
+        {from: '慈寿寺桥', to: '陶然亭公园北门', amount:1099},
+        {from: '慈寿寺桥', to: '太平街', amount:6638},
+        {from: '慈寿寺桥', to: '陶然桥北', amount:0},
+        {from: '慈寿寺桥', to: '陶然桥东', amount:127},
+        {from: '慈寿寺桥', to: '沙子口', amount:2095},
+        {from: '慈寿寺桥', to: '木樨园桥北', amount:749},
+        {from: '西钓鱼台', to: '五路', amount:108},
+        {from: '西钓鱼台', to: '慈寿寺桥', amount:590400},
+        {from: '西钓鱼台', to: '航天桥西', amount:2088},
+        {from: '西钓鱼台', to: '航天桥南', amount:1452},
+        {from: '西钓鱼台', to: '八一湖', amount:181},
+        {from: '西钓鱼台', to: '公主坟北', amount:787},
+        {from: '西钓鱼台', to: '公主坟东', amount:2496},
+        {from: '西钓鱼台', to: '皇亭子', amount:5835},
+        {from: '西钓鱼台', to: '北京西站', amount:590400},
+        {from: '西钓鱼台', to: '小马厂', amount:4005},
+        {from: '西钓鱼台', to: '天宁寺桥西', amount:6620},
+        {from: '西钓鱼台', to: '广安门北', amount:5415},
+        {from: '西钓鱼台', to: '广安门内', amount:0},
+        {from: '西钓鱼台', to: '枣林前街', amount:414},
+        {from: '西钓鱼台', to: '白纸坊', amount:239},
+        {from: '西钓鱼台', to: '南樱桃园路口西', amount:1693000},
+        {from: '西钓鱼台', to: '半步桥', amount:405},
+        {from: '西钓鱼台', to: '自新路口东', amount:6281},
+        {from: '西钓鱼台', to: '陶然亭公园北门', amount:0},
+        {from: '西钓鱼台', to: '太平街', amount:0},
+        {from: '西钓鱼台', to: '陶然桥北', amount:4588},
+        {from: '西钓鱼台', to: '陶然桥东', amount:565},
+        {from: '西钓鱼台', to: '沙子口', amount:259},
+        {from: '西钓鱼台', to: '木樨园桥北', amount:5373},
+        {from: '航天桥西', to: '五路', amount:2440},
+        {from: '航天桥西', to: '慈寿寺桥', amount:1557},
+        {from: '航天桥西', to: '西钓鱼台', amount:1283},
+        {from: '航天桥西', to: '航天桥南', amount:0},
+        {from: '航天桥西', to: '八一湖', amount:1852},
+        {from: '航天桥西', to: '公主坟北', amount:4287},
+        {from: '航天桥西', to: '公主坟东', amount:0},
+        {from: '航天桥西', to: '皇亭子', amount:2258},
+        {from: '航天桥西', to: '北京西站', amount:0},
+        {from: '航天桥西', to: '小马厂', amount:0},
+        {from: '航天桥西', to: '天宁寺桥西', amount:8103},
+        {from: '航天桥西', to: '广安门北', amount:0},
+        {from: '航天桥西', to: '广安门内', amount:1384},
+        {from: '航天桥西', to: '枣林前街', amount:2683},
+        {from: '航天桥西', to: '白纸坊', amount:0},
+        {from: '航天桥西', to: '南樱桃园路口西', amount:1223},
+        {from: '航天桥西', to: '半步桥', amount:353},
+        {from: '航天桥西', to: '自新路口东', amount:1922},
+        {from: '航天桥西', to: '陶然亭公园北门', amount:379},
+        {from: '航天桥西', to: '太平街', amount:3726},
+        {from: '航天桥西', to: '陶然桥北', amount:4376},
+        {from: '航天桥西', to: '陶然桥东', amount:0},
+        {from: '航天桥西', to: '沙子口', amount:0},
+        {from: '航天桥西', to: '木樨园桥北', amount:5808},
+        {from: '航天桥南', to: '五路', amount:2549},
+        {from: '航天桥南', to: '慈寿寺桥', amount:58},
+        {from: '航天桥南', to: '西钓鱼台', amount:2620},
+        {from: '航天桥南', to: '航天桥西', amount:0},
+        {from: '航天桥南', to: '八一湖', amount:2232},
+        {from: '航天桥南', to: '公主坟北', amount:0},
+        {from: '航天桥南', to: '公主坟东', amount:1143},
+        {from: '航天桥南', to: '皇亭子', amount:1159},
+        {from: '航天桥南', to: '北京西站', amount:7328},
+        {from: '航天桥南', to: '小马厂', amount:2578},
+        {from: '航天桥南', to: '天宁寺桥西', amount:404},
+        {from: '航天桥南', to: '广安门北', amount:186},
+        {from: '航天桥南', to: '广安门内', amount:776},
+        {from: '航天桥南', to: '枣林前街', amount:7993},
+        {from: '航天桥南', to: '白纸坊', amount:2035},
+        {from: '航天桥南', to: '南樱桃园路口西', amount:1225},
+        {from: '航天桥南', to: '半步桥', amount:2603},
+        {from: '航天桥南', to: '自新路口东', amount:2357},
+        {from: '航天桥南', to: '陶然亭公园北门', amount:1136},
+        {from: '航天桥南', to: '太平街', amount:868},
+        {from: '航天桥南', to: '陶然桥北', amount:1618},
+        {from: '航天桥南', to: '陶然桥东', amount:2398},
+        {from: '航天桥南', to: '沙子口', amount:6085},
+        {from: '航天桥南', to: '木樨园桥北', amount:357},
+        {from: '八一湖', to: '五路', amount:357},
+        {from: '八一湖', to: '慈寿寺桥', amount:23},
+        {from: '八一湖', to: '西钓鱼台', amount:36},
+        {from: '八一湖', to: '航天桥西', amount:778},
+        {from: '八一湖', to: '航天桥南', amount:401},
+        {from: '八一湖', to: '公主坟北', amount:2935},
+        {from: '八一湖', to: '公主坟东', amount:2645},
+        {from: '八一湖', to: '皇亭子', amount:4169},
+        {from: '八一湖', to: '北京西站', amount:2499},
+        {from: '八一湖', to: '小马厂', amount:0},
+        {from: '八一湖', to: '天宁寺桥西', amount:984},
+        {from: '八一湖', to: '广安门北', amount:102},
+        {from: '八一湖', to: '广安门内', amount:72},
+        {from: '八一湖', to: '枣林前街', amount:403},
+        {from: '八一湖', to: '白纸坊', amount:6268},
+        {from: '八一湖', to: '南樱桃园路口西', amount:48},
+        {from: '八一湖', to: '半步桥', amount:0},
+        {from: '八一湖', to: '自新路口东', amount:24},
+        {from: '八一湖', to: '陶然亭公园北门', amount:546},
+        {from: '八一湖', to: '太平街', amount:6926},
+        {from: '八一湖', to: '陶然桥北', amount:652},
+        {from: '八一湖', to: '陶然桥东', amount:5651},
+        {from: '八一湖', to: '沙子口', amount:1145},
+        {from: '八一湖', to: '木樨园桥北', amount:224},
+        {from: '公主坟北', to: '五路', amount:2189},
+        {from: '公主坟北', to: '慈寿寺桥', amount:8660},
+        {from: '公主坟北', to: '西钓鱼台', amount:6936},
+        {from: '公主坟北', to: '航天桥西', amount:3144},
+        {from: '公主坟北', to: '航天桥南', amount:4823},
+        {from: '公主坟北', to: '八一湖', amount:42},
+        {from: '公主坟北', to: '公主坟东', amount:1625},
+        {from: '公主坟北', to: '皇亭子', amount:638},
+        {from: '公主坟北', to: '北京西站', amount:3662},
+        {from: '公主坟北', to: '小马厂', amount:1284},
+        {from: '公主坟北', to: '天宁寺桥西', amount:7626},
+        {from: '公主坟北', to: '广安门北', amount:4408},
+        {from: '公主坟北', to: '广安门内', amount:3017},
+        {from: '公主坟北', to: '枣林前街', amount:1790},
+        {from: '公主坟北', to: '白纸坊', amount:3843},
+        {from: '公主坟北', to: '南樱桃园路口西', amount:627},
+        {from: '公主坟北', to: '半步桥', amount:97},
+        {from: '公主坟北', to: '自新路口东', amount:2483},
+        {from: '公主坟北', to: '陶然亭公园北门', amount:2427},
+        {from: '公主坟北', to: '太平街', amount:0},
+        {from: '公主坟北', to: '陶然桥北', amount:2241},
+        {from: '公主坟北', to: '陶然桥东', amount:2119},
+        {from: '公主坟北', to: '沙子口', amount:0},
+        {from: '公主坟北', to: '木樨园桥北', amount:0},
+        {from: '公主坟东', to: '五路', amount:0},
+        {from: '公主坟东', to: '慈寿寺桥', amount:0},
+        {from: '公主坟东', to: '西钓鱼台', amount:208},
+        {from: '公主坟东', to: '航天桥西', amount:3616},
+        {from: '公主坟东', to: '航天桥南', amount:4239},
+        {from: '公主坟东', to: '八一湖', amount:0},
+        {from: '公主坟东', to: '公主坟北', amount:583},
+        {from: '公主坟东', to: '皇亭子', amount:5627},
+        {from: '公主坟东', to: '北京西站', amount:1771},
+        {from: '公主坟东', to: '小马厂', amount:6359},
+        {from: '公主坟东', to: '天宁寺桥西', amount:10},
+        {from: '公主坟东', to: '广安门北', amount:7126},
+        {from: '公主坟东', to: '广安门内', amount:2048},
+        {from: '公主坟东', to: '枣林前街', amount:2743},
+        {from: '公主坟东', to: '白纸坊', amount:2145},
+        {from: '公主坟东', to: '南樱桃园路口西', amount:737},
+        {from: '公主坟东', to: '半步桥', amount:6169},
+        {from: '公主坟东', to: '自新路口东', amount:333},
+        {from: '公主坟东', to: '陶然亭公园北门', amount:589},
+        {from: '公主坟东', to: '太平街', amount:831},
+        {from: '公主坟东', to: '陶然桥北', amount:4123},
+        {from: '公主坟东', to: '陶然桥东', amount:3804},
+        {from: '公主坟东', to: '沙子口', amount:1964},
+        {from: '公主坟东', to: '木樨园桥北', amount:0},
+        {from: '皇亭子', to: '五路', amount:2674},
+        {from: '皇亭子', to: '慈寿寺桥', amount:5392},
+        {from: '皇亭子', to: '西钓鱼台', amount:0},
+        {from: '皇亭子', to: '航天桥西', amount:0},
+        {from: '皇亭子', to: '航天桥南', amount:1308},
+        {from: '皇亭子', to: '八一湖', amount:1010},
+        {from: '皇亭子', to: '公主坟北', amount:3045},
+        {from: '皇亭子', to: '公主坟东', amount:0},
+        {from: '皇亭子', to: '北京西站', amount:1487},
+        {from: '皇亭子', to: '小马厂', amount:1964},
+        {from: '皇亭子', to: '天宁寺桥西', amount:564},
+        {from: '皇亭子', to: '广安门北', amount:2221},
+        {from: '皇亭子', to: '广安门内', amount:3532},
+        {from: '皇亭子', to: '枣林前街', amount:0},
+        {from: '皇亭子', to: '白纸坊', amount:1538},
+        {from: '皇亭子', to: '南樱桃园路口西', amount:4468},
+        {from: '皇亭子', to: '半步桥', amount:577},
+        {from: '皇亭子', to: '自新路口东', amount:0},
+        {from: '皇亭子', to: '陶然亭公园北门', amount:6267},
+        {from: '皇亭子', to: '太平街', amount:0},
+        {from: '皇亭子', to: '陶然桥北', amount:5391},
+        {from: '皇亭子', to: '陶然桥东', amount:2521},
+        {from: '皇亭子', to: '沙子口', amount:1397},
+        {from: '皇亭子', to: '木樨园桥北', amount:2680},
+        {from: '北京西站', to: '五路', amount:148},
+        {from: '北京西站', to: '慈寿寺桥', amount:1793},
+        {from: '北京西站', to: '西钓鱼台', amount:1392},
+        {from: '北京西站', to: '航天桥西', amount:333},
+        {from: '北京西站', to: '航天桥南', amount:2800},
+        {from: '北京西站', to: '八一湖', amount:4349},
+        {from: '北京西站', to: '公主坟北', amount:8324},
+        {from: '北京西站', to: '公主坟东', amount:92},
+        {from: '北京西站', to: '皇亭子', amount:4260},
+        {from: '北京西站', to: '小马厂', amount:1600},
+        {from: '北京西站', to: '天宁寺桥西', amount:273},
+        {from: '北京西站', to: '广安门北', amount:0},
+        {from: '北京西站', to: '广安门内', amount:0},
+        {from: '北京西站', to: '枣林前街', amount:0},
+        {from: '北京西站', to: '白纸坊', amount:561},
+        {from: '北京西站', to: '南樱桃园路口西', amount:5829},
+        {from: '北京西站', to: '半步桥', amount:0},
+        {from: '北京西站', to: '自新路口东', amount:8838},
+        {from: '北京西站', to: '陶然亭公园北门', amount:688},
+        {from: '北京西站', to: '太平街', amount:2970},
+        {from: '北京西站', to: '陶然桥北', amount:1768},
+        {from: '北京西站', to: '陶然桥东', amount:15},
+        {from: '北京西站', to: '沙子口', amount:90},
+        {from: '北京西站', to: '木樨园桥北', amount:0},
+        {from: '小马厂', to: '五路', amount:816},
+        {from: '小马厂', to: '慈寿寺桥', amount:300},
+        {from: '小马厂', to: '西钓鱼台', amount:841},
+        {from: '小马厂', to: '航天桥西', amount:1364},
+        {from: '小马厂', to: '航天桥南', amount:2895},
+        {from: '小马厂', to: '八一湖', amount:467},
+        {from: '小马厂', to: '公主坟北', amount:957},
+        {from: '小马厂', to: '公主坟东', amount:786},
+        {from: '小马厂', to: '皇亭子', amount:0},
+        {from: '小马厂', to: '北京西站', amount:679},
+        {from: '小马厂', to: '天宁寺桥西', amount:3435},
+        {from: '小马厂', to: '广安门北', amount:1534},
+        {from: '小马厂', to: '广安门内', amount:8550},
+        {from: '小马厂', to: '枣林前街', amount:1337},
+        {from: '小马厂', to: '白纸坊', amount:8728},
+        {from: '小马厂', to: '南樱桃园路口西', amount:49},
+        {from: '小马厂', to: '半步桥', amount:24},
+        {from: '小马厂', to: '自新路口东', amount:892},
+        {from: '小马厂', to: '陶然亭公园北门', amount:3997},
+        {from: '小马厂', to: '太平街', amount:766},
+        {from: '小马厂', to: '陶然桥北', amount:952},
+        {from: '小马厂', to: '陶然桥东', amount:272},
+        {from: '小马厂', to: '沙子口', amount:0},
+        {from: '小马厂', to: '木樨园桥北', amount:150},
+        {from: '天宁寺桥西', to: '五路', amount:4649},
+        {from: '天宁寺桥西', to: '慈寿寺桥', amount:218},
+        {from: '天宁寺桥西', to: '西钓鱼台', amount:306},
+        {from: '天宁寺桥西', to: '航天桥西', amount:272},
+        {from: '天宁寺桥西', to: '航天桥南', amount:0},
+        {from: '天宁寺桥西', to: '八一湖', amount:0},
+        {from: '天宁寺桥西', to: '公主坟北', amount:38},
+        {from: '天宁寺桥西', to: '公主坟东', amount:587},
+        {from: '天宁寺桥西', to: '皇亭子', amount:1041},
+        {from: '天宁寺桥西', to: '北京西站', amount:3043},
+        {from: '天宁寺桥西', to: '小马厂', amount:3678},
+        {from: '天宁寺桥西', to: '广安门北', amount:357},
+        {from: '天宁寺桥西', to: '广安门内', amount:28},
+        {from: '天宁寺桥西', to: '枣林前街', amount:299},
+        {from: '天宁寺桥西', to: '白纸坊', amount:0},
+        {from: '天宁寺桥西', to: '南樱桃园路口西', amount:7820},
+        {from: '天宁寺桥西', to: '半步桥', amount:2493},
+        {from: '天宁寺桥西', to: '自新路口东', amount:5383},
+        {from: '天宁寺桥西', to: '陶然亭公园北门', amount:0},
+        {from: '天宁寺桥西', to: '太平街', amount:210},
+        {from: '天宁寺桥西', to: '陶然桥北', amount:1572},
+        {from: '天宁寺桥西', to: '陶然桥东', amount:1464},
+        {from: '天宁寺桥西', to: '沙子口', amount:3628},
+        {from: '天宁寺桥西', to: '木樨园桥北', amount:1832},
+        {from: '广安门北', to: '五路', amount:7082},
+        {from: '广安门北', to: '慈寿寺桥', amount:6782},
+        {from: '广安门北', to: '西钓鱼台', amount:1060},
+        {from: '广安门北', to: '航天桥西', amount:1610},
+        {from: '广安门北', to: '航天桥南', amount:1301},
+        {from: '广安门北', to: '八一湖', amount:648},
+        {from: '广安门北', to: '公主坟北', amount:2919},
+        {from: '广安门北', to: '公主坟东', amount:1473},
+        {from: '广安门北', to: '皇亭子', amount:6237},
+        {from: '广安门北', to: '北京西站', amount:3216},
+        {from: '广安门北', to: '小马厂', amount:5371},
+        {from: '广安门北', to: '天宁寺桥西', amount:0},
+        {from: '广安门北', to: '广安门内', amount:6572},
+        {from: '广安门北', to: '枣林前街', amount:907},
+        {from: '广安门北', to: '白纸坊', amount:0},
+        {from: '广安门北', to: '南樱桃园路口西', amount:0},
+        {from: '广安门北', to: '半步桥', amount:1677},
+        {from: '广安门北', to: '自新路口东', amount:2214},
+        {from: '广安门北', to: '陶然亭公园北门', amount:0},
+        {from: '广安门北', to: '太平街', amount:6855},
+        {from: '广安门北', to: '陶然桥北', amount:0},
+        {from: '广安门北', to: '陶然桥东', amount:2227},
+        {from: '广安门北', to: '沙子口', amount:1773},
+        {from: '广安门北', to: '木樨园桥北', amount:636},
+        {from: '广安门内', to: '五路', amount:3848},
+        {from: '广安门内', to: '慈寿寺桥', amount:792},
+        {from: '广安门内', to: '西钓鱼台', amount:0},
+        {from: '广安门内', to: '航天桥西', amount:8024},
+        {from: '广安门内', to: '航天桥南', amount:0},
+        {from: '广安门内', to: '八一湖', amount:2131},
+        {from: '广安门内', to: '公主坟北', amount:0},
+        {from: '广安门内', to: '公主坟东', amount:3435},
+        {from: '广安门内', to: '皇亭子', amount:5076},
+        {from: '广安门内', to: '北京西站', amount:5771},
+        {from: '广安门内', to: '小马厂', amount:1735},
+        {from: '广安门内', to: '天宁寺桥西', amount:4814},
+        {from: '广安门内', to: '广安门北', amount:1437},
+        {from: '广安门内', to: '枣林前街', amount:54},
+        {from: '广安门内', to: '白纸坊', amount:292},
+        {from: '广安门内', to: '南樱桃园路口西', amount:1585},
+        {from: '广安门内', to: '半步桥', amount:5463},
+        {from: '广安门内', to: '自新路口东', amount:792},
+        {from: '广安门内', to: '陶然亭公园北门', amount:365},
+        {from: '广安门内', to: '太平街', amount:1698},
+        {from: '广安门内', to: '陶然桥北', amount:0},
+        {from: '广安门内', to: '陶然桥东', amount:0},
+        {from: '广安门内', to: '沙子口', amount:5845},
+        {from: '广安门内', to: '木樨园桥北', amount:1266},
+        {from: '枣林前街', to: '五路', amount:8185},
+        {from: '枣林前街', to: '慈寿寺桥', amount:19},
+        {from: '枣林前街', to: '西钓鱼台', amount:198},
+        {from: '枣林前街', to: '航天桥西', amount:1847},
+        {from: '枣林前街', to: '航天桥南', amount:80},
+        {from: '枣林前街', to: '八一湖', amount:9310},
+        {from: '枣林前街', to: '公主坟北', amount:3352},
+        {from: '枣林前街', to: '公主坟东', amount:1439},
+        {from: '枣林前街', to: '皇亭子', amount:2182},
+        {from: '枣林前街', to: '北京西站', amount:2659},
+        {from: '枣林前街', to: '小马厂', amount:6070},
+        {from: '枣林前街', to: '天宁寺桥西', amount:4792},
+        {from: '枣林前街', to: '广安门北', amount:519},
+        {from: '枣林前街', to: '广安门内', amount:2396},
+        {from: '枣林前街', to: '白纸坊', amount:635},
+        {from: '枣林前街', to: '南樱桃园路口西', amount:5810},
+        {from: '枣林前街', to: '半步桥', amount:1055},
+        {from: '枣林前街', to: '自新路口东', amount:7521},
+        {from: '枣林前街', to: '陶然亭公园北门', amount:1526},
+        {from: '枣林前街', to: '太平街', amount:3453},
+        {from: '枣林前街', to: '陶然桥北', amount:3018},
+        {from: '枣林前街', to: '陶然桥东', amount:4408},
+        {from: '枣林前街', to: '沙子口', amount:1155},
+        {from: '枣林前街', to: '木樨园桥北', amount:2305},
+        {from: '白纸坊', to: '五路', amount:2241},
+        {from: '白纸坊', to: '慈寿寺桥', amount:0},
+        {from: '白纸坊', to: '西钓鱼台', amount:650},
+        {from: '白纸坊', to: '航天桥西', amount:3745},
+        {from: '白纸坊', to: '航天桥南', amount:512},
+        {from: '白纸坊', to: '八一湖', amount:3649},
+        {from: '白纸坊', to: '公主坟北', amount:765},
+        {from: '白纸坊', to: '公主坟东', amount:4992},
+        {from: '白纸坊', to: '皇亭子', amount:751},
+        {from: '白纸坊', to: '北京西站', amount:538},
+        {from: '白纸坊', to: '小马厂', amount:2019},
+        {from: '白纸坊', to: '天宁寺桥西', amount:6887},
+        {from: '白纸坊', to: '广安门北', amount:5441},
+        {from: '白纸坊', to: '广安门内', amount:1274},
+        {from: '白纸坊', to: '枣林前街', amount:3256},
+        {from: '白纸坊', to: '南樱桃园路口西', amount:1261},
+        {from: '白纸坊', to: '半步桥', amount:0},
+        {from: '白纸坊', to: '自新路口东', amount:0},
+        {from: '白纸坊', to: '陶然亭公园北门', amount:4190},
+        {from: '白纸坊', to: '太平街', amount:1052},
+        {from: '白纸坊', to: '陶然桥北', amount:1573},
+        {from: '白纸坊', to: '陶然桥东', amount:0},
+        {from: '白纸坊', to: '沙子口', amount:785},
+        {from: '白纸坊', to: '木樨园桥北', amount:5284},
+        {from: '南樱桃园路口西', to: '五路', amount:6226},
+        {from: '南樱桃园路口西', to: '慈寿寺桥', amount:8431},
+        {from: '南樱桃园路口西', to: '西钓鱼台', amount:551},
+        {from: '南樱桃园路口西', to: '航天桥西', amount:6936},
+        {from: '南樱桃园路口西', to: '航天桥南', amount:710},
+        {from: '南樱桃园路口西', to: '八一湖', amount:681},
+        {from: '南樱桃园路口西', to: '公主坟北', amount:434},
+        {from: '南樱桃园路口西', to: '公主坟东', amount:360},
+        {from: '南樱桃园路口西', to: '皇亭子', amount:0},
+        {from: '南樱桃园路口西', to: '北京西站', amount:913},
+        {from: '南樱桃园路口西', to: '小马厂', amount:0},
+        {from: '南樱桃园路口西', to: '天宁寺桥西', amount:0},
+        {from: '南樱桃园路口西', to: '广安门北', amount:963},
+        {from: '南樱桃园路口西', to: '广安门内', amount:3879},
+        {from: '南樱桃园路口西', to: '枣林前街', amount:135},
+        {from: '南樱桃园路口西', to: '白纸坊', amount:1851},
+        {from: '南樱桃园路口西', to: '半步桥', amount:2370},
+        {from: '南樱桃园路口西', to: '自新路口东', amount:5511},
+        {from: '南樱桃园路口西', to: '陶然亭公园北门', amount:1713},
+        {from: '南樱桃园路口西', to: '太平街', amount:5405},
+        {from: '南樱桃园路口西', to: '陶然桥北', amount:5292},
+        {from: '南樱桃园路口西', to: '陶然桥东', amount:1466},
+        {from: '南樱桃园路口西', to: '沙子口', amount:2853},
+        {from: '南樱桃园路口西', to: '木樨园桥北', amount:4460},
+        {from: '半步桥', to: '五路', amount:348},
+        {from: '半步桥', to: '慈寿寺桥', amount:470},
+        {from: '半步桥', to: '西钓鱼台', amount:5016},
+        {from: '半步桥', to: '航天桥西', amount:342},
+        {from: '半步桥', to: '航天桥南', amount:1130},
+        {from: '半步桥', to: '八一湖', amount:761},
+        {from: '半步桥', to: '公主坟北', amount:7611},
+        {from: '半步桥', to: '公主坟东', amount:862},
+        {from: '半步桥', to: '皇亭子', amount:1149},
+        {from: '半步桥', to: '北京西站', amount:2985},
+        {from: '半步桥', to: '小马厂', amount:131},
+        {from: '半步桥', to: '天宁寺桥西', amount:4362},
+        {from: '半步桥', to: '广安门北', amount:350},
+        {from: '半步桥', to: '广安门内', amount:741},
+        {from: '半步桥', to: '枣林前街', amount:3297},
+        {from: '半步桥', to: '白纸坊', amount:2882},
+        {from: '半步桥', to: '南樱桃园路口西', amount:12},
+        {from: '半步桥', to: '自新路口东', amount:5689},
+        {from: '半步桥', to: '陶然亭公园北门', amount:907},
+        {from: '半步桥', to: '太平街', amount:0},
+        {from: '半步桥', to: '陶然桥北', amount:6073},
+        {from: '半步桥', to: '陶然桥东', amount:364},
+        {from: '半步桥', to: '沙子口', amount:2109},
+        {from: '半步桥', to: '木樨园桥北', amount:2452},
+        {from: '自新路口东', to: '五路', amount:0},
+        {from: '自新路口东', to: '慈寿寺桥', amount:0},
+        {from: '自新路口东', to: '西钓鱼台', amount:6061},
+        {from: '自新路口东', to: '航天桥西', amount:5555},
+        {from: '自新路口东', to: '航天桥南', amount:4778},
+        {from: '自新路口东', to: '八一湖', amount:7990},
+        {from: '自新路口东', to: '公主坟北', amount:2089},
+        {from: '自新路口东', to: '公主坟东', amount:9385},
+        {from: '自新路口东', to: '皇亭子', amount:133},
+        {from: '自新路口东', to: '北京西站', amount:1729},
+        {from: '自新路口东', to: '小马厂', amount:748},
+        {from: '自新路口东', to: '天宁寺桥西', amount:1635},
+        {from: '自新路口东', to: '广安门北', amount:0},
+        {from: '自新路口东', to: '广安门内', amount:1286},
+        {from: '自新路口东', to: '枣林前街', amount:132},
+        {from: '自新路口东', to: '白纸坊', amount:3671},
+        {from: '自新路口东', to: '南樱桃园路口西', amount:0},
+        {from: '自新路口东', to: '半步桥', amount:124},
+        {from: '自新路口东', to: '陶然亭公园北门', amount:3867},
+        {from: '自新路口东', to: '太平街', amount:3146},
+        {from: '自新路口东', to: '陶然桥北', amount:680},
+        {from: '自新路口东', to: '陶然桥东', amount:1276},
+        {from: '自新路口东', to: '沙子口', amount:4787},
+        {from: '自新路口东', to: '木樨园桥北', amount:1544},
+        {from: '陶然亭公园北门', to: '五路', amount:4262},
+        {from: '陶然亭公园北门', to: '慈寿寺桥', amount:305},
+        {from: '陶然亭公园北门', to: '西钓鱼台', amount:3809},
+        {from: '陶然亭公园北门', to: '航天桥西', amount:0},
+        {from: '陶然亭公园北门', to: '航天桥南', amount:5019},
+        {from: '陶然亭公园北门', to: '八一湖', amount:0},
+        {from: '陶然亭公园北门', to: '公主坟北', amount:203},
+        {from: '陶然亭公园北门', to: '公主坟东', amount:0},
+        {from: '陶然亭公园北门', to: '皇亭子', amount:1817},
+        {from: '陶然亭公园北门', to: '北京西站', amount:0},
+        {from: '陶然亭公园北门', to: '小马厂', amount:1545},
+        {from: '陶然亭公园北门', to: '天宁寺桥西', amount:1189},
+        {from: '陶然亭公园北门', to: '广安门北', amount:322},
+        {from: '陶然亭公园北门', to: '广安门内', amount:160},
+        {from: '陶然亭公园北门', to: '枣林前街', amount:1539},
+        {from: '陶然亭公园北门', to: '白纸坊', amount:0},
+        {from: '陶然亭公园北门', to: '南樱桃园路口西', amount:3242},
+        {from: '陶然亭公园北门', to: '半步桥', amount:1383},
+        {from: '陶然亭公园北门', to: '自新路口东', amount:686},
+        {from: '陶然亭公园北门', to: '太平街', amount:686},
+        {from: '陶然亭公园北门', to: '陶然桥北', amount:372},
+        {from: '陶然亭公园北门', to: '陶然桥东', amount:8429},
+        {from: '陶然亭公园北门', to: '沙子口', amount:3905},
+        {from: '陶然亭公园北门', to: '木樨园桥北', amount:7885},
+        {from: '太平街', to: '五路', amount:0},
+        {from: '太平街', to: '慈寿寺桥', amount:242},
+        {from: '太平街', to: '西钓鱼台', amount:5520},
+        {from: '太平街', to: '航天桥西', amount:0},
+        {from: '太平街', to: '航天桥南', amount:584},
+        {from: '太平街', to: '八一湖', amount:2122},
+        {from: '太平街', to: '公主坟北', amount:0},
+        {from: '太平街', to: '公主坟东', amount:69},
+        {from: '太平街', to: '皇亭子', amount:2899},
+        {from: '太平街', to: '北京西站', amount:3097},
+        {from: '太平街', to: '小马厂', amount:802},
+        {from: '太平街', to: '天宁寺桥西', amount:8508},
+        {from: '太平街', to: '广安门北', amount:642},
+        {from: '太平街', to: '广安门内', amount:2484},
+        {from: '太平街', to: '枣林前街', amount:202},
+        {from: '太平街', to: '白纸坊', amount:2652},
+        {from: '太平街', to: '南樱桃园路口西', amount:325},
+        {from: '太平街', to: '半步桥', amount:201},
+        {from: '太平街', to: '自新路口东', amount:1314},
+        {from: '太平街', to: '陶然亭公园北门', amount:653},
+        {from: '太平街', to: '陶然桥北', amount:126},
+        {from: '太平街', to: '陶然桥东', amount:498},
+        {from: '太平街', to: '沙子口', amount:1906},
+        {from: '太平街', to: '木樨园桥北', amount:2929},
+        {from: '陶然桥北', to: '五路', amount:6775},
+        {from: '陶然桥北', to: '慈寿寺桥', amount:2808},
+        {from: '陶然桥北', to: '西钓鱼台', amount:1693000},
+        {from: '陶然桥北', to: '航天桥西', amount:207},
+        {from: '陶然桥北', to: '航天桥南', amount:4042},
+        {from: '陶然桥北', to: '八一湖', amount:4861},
+        {from: '陶然桥北', to: '公主坟北', amount:2707},
+        {from: '陶然桥北', to: '公主坟东', amount:3640},
+        {from: '陶然桥北', to: '皇亭子', amount:2083},
+        {from: '陶然桥北', to: '北京西站', amount:4878},
+        {from: '陶然桥北', to: '小马厂', amount:1626},
+        {from: '陶然桥北', to: '天宁寺桥西', amount:437},
+        {from: '陶然桥北', to: '广安门北', amount:3978},
+        {from: '陶然桥北', to: '广安门内', amount:0},
+        {from: '陶然桥北', to: '枣林前街', amount:2858},
+        {from: '陶然桥北', to: '白纸坊', amount:4862},
+        {from: '陶然桥北', to: '南樱桃园路口西', amount:625},
+        {from: '陶然桥北', to: '半步桥', amount:1818},
+        {from: '陶然桥北', to: '自新路口东', amount:560},
+        {from: '陶然桥北', to: '陶然亭公园北门', amount:0},
+        {from: '陶然桥北', to: '太平街', amount:3032},
+        {from: '陶然桥北', to: '陶然桥东', amount:0},
+        {from: '陶然桥北', to: '沙子口', amount:0},
+        {from: '陶然桥北', to: '木樨园桥北', amount:4000},
+        {from: '陶然桥东', to: '五路', amount:0},
+        {from: '陶然桥东', to: '慈寿寺桥', amount:21},
+        {from: '陶然桥东', to: '西钓鱼台', amount:3633},
+        {from: '陶然桥东', to: '航天桥西', amount:0},
+        {from: '陶然桥东', to: '航天桥南', amount:360},
+        {from: '陶然桥东', to: '八一湖', amount:2112},
+        {from: '陶然桥东', to: '公主坟北', amount:409},
+        {from: '陶然桥东', to: '公主坟东', amount:1928},
+        {from: '陶然桥东', to: '皇亭子', amount:4275},
+        {from: '陶然桥东', to: '北京西站', amount:4614},
+        {from: '陶然桥东', to: '小马厂', amount:2709},
+        {from: '陶然桥东', to: '天宁寺桥西', amount:1157},
+        {from: '陶然桥东', to: '广安门北', amount:6340},
+        {from: '陶然桥东', to: '广安门内', amount:0},
+        {from: '陶然桥东', to: '枣林前街', amount:0},
+        {from: '陶然桥东', to: '白纸坊', amount:1549},
+        {from: '陶然桥东', to: '南樱桃园路口西', amount:5202},
+        {from: '陶然桥东', to: '半步桥', amount:214},
+        {from: '陶然桥东', to: '自新路口东', amount:0},
+        {from: '陶然桥东', to: '陶然亭公园北门', amount:350},
+        {from: '陶然桥东', to: '太平街', amount:3703},
+        {from: '陶然桥东', to: '陶然桥北', amount:11},
+        {from: '陶然桥东', to: '沙子口', amount:0},
+        {from: '陶然桥东', to: '木樨园桥北', amount:0},
+        {from: '沙子口', to: '五路', amount:7038},
+        {from: '沙子口', to: '慈寿寺桥', amount:50},
+        {from: '沙子口', to: '西钓鱼台', amount:0},
+        {from: '沙子口', to: '航天桥西', amount:1817},
+        {from: '沙子口', to: '航天桥南', amount:2526},
+        {from: '沙子口', to: '八一湖', amount:0},
+        {from: '沙子口', to: '公主坟北', amount:2690},
+        {from: '沙子口', to: '公主坟东', amount:684},
+        {from: '沙子口', to: '皇亭子', amount:3080},
+        {from: '沙子口', to: '北京西站', amount:2879},
+        {from: '沙子口', to: '小马厂', amount:1484},
+        {from: '沙子口', to: '天宁寺桥西', amount:2515},
+        {from: '沙子口', to: '广安门北', amount:4043},
+        {from: '沙子口', to: '广安门内', amount:795},
+        {from: '沙子口', to: '枣林前街', amount:727},
+        {from: '沙子口', to: '白纸坊', amount:483},
+        {from: '沙子口', to: '南樱桃园路口西', amount:3893},
+        {from: '沙子口', to: '半步桥', amount:24},
+        {from: '沙子口', to: '自新路口东', amount:184},
+        {from: '沙子口', to: '陶然亭公园北门', amount:1363},
+        {from: '沙子口', to: '太平街', amount:568},
+        {from: '沙子口', to: '陶然桥北', amount:2326},
+        {from: '沙子口', to: '陶然桥东', amount:2390},
+        {from: '沙子口', to: '木樨园桥北', amount:2279},
+        {from: '木樨园桥北', to: '五路', amount:4494},
+        {from: '木樨园桥北', to: '慈寿寺桥', amount:1357},
+        {from: '木樨园桥北', to: '西钓鱼台', amount:49},
+        {from: '木樨园桥北', to: '航天桥西', amount:6266},
+        {from: '木樨园桥北', to: '航天桥南', amount:5793},
+        {from: '木樨园桥北', to: '八一湖', amount:2424},
+        {from: '木樨园桥北', to: '公主坟北', amount:2394},
+        {from: '木樨园桥北', to: '公主坟东', amount:1515},
+        {from: '木樨园桥北', to: '皇亭子', amount:1797},
+        {from: '木樨园桥北', to: '北京西站', amount:0},
+        {from: '木樨园桥北', to: '小马厂', amount:2416},
+        {from: '木樨园桥北', to: '天宁寺桥西', amount:1383},
+        {from: '木樨园桥北', to: '广安门北', amount:2509},
+        {from: '木樨园桥北', to: '广安门内', amount:255},
+        {from: '木樨园桥北', to: '枣林前街', amount:2414},
+        {from: '木樨园桥北', to: '白纸坊', amount:999},
+        {from: '木樨园桥北', to: '南樱桃园路口西', amount:114},
+        {from: '木樨园桥北', to: '半步桥', amount:0},
+        {from: '木樨园桥北', to: '自新路口东', amount:3663},
+        {from: '木樨园桥北', to: '陶然亭公园北门', amount:0},
+        {from: '木樨园桥北', to: '太平街', amount:3428},
+        {from: '木樨园桥北', to: '陶然桥北', amount:5656},
+        {from: '木樨园桥北', to: '陶然桥东', amount:1293},
+        {from: '木樨园桥北', to: '沙子口', amount:865}
+    ];
+    var camera, scene, renderer;
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2(), INTERSECTED;
+    var graphic = new ESmile.GraphicObject();
+    var container = document.getElementById( 'chart' );
+    var curves = [];
+    var flags = [],colors = [],titles=[],selection=[];
+
+    var chart = {
+        _camera: new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 100000 ),
+
+        _graphic:graphic,
+        //   _width:window.innerWidth,
+        //   _height:window.innerWidth,
+        _scene: new THREE.Scene()
+    };
+    init();
+    animate();
+
+    function init() {
+
+
+        camera = chart._camera;
+        camera.position.z = 600;
+        scene = chart._scene;
+        legend = chart._legend;
+        scene.rotateX(-Math.PI/3);
+        scene.rotateZ(Math.PI/4);
+        //scene.add(new THREE.AxisHelper(1000));
+        var dirLight = new THREE.DirectionalLight( 0xeeeeee );
+        dirLight.position.set( -1, 0, 200 ).normalize();
+        scene.add( dirLight );
+        var dirLight2 = new THREE.DirectionalLight( 0xeeeeee );
+        dirLight2.position.set( 0, 1, -200 ).normalize();
+        scene.add( dirLight2 );
+        /*var ambientLight = new THREE.AmbientLight( 0x222222 );
+        scene.add( ambientLight );*/
+
+        var groundTexture = THREE.ImageUtils.loadTexture( "../img/40line.jpg" );
+        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.anisotropy = 16;
+
+        var groundMaterial = new THREE.MeshLambertMaterial( {  map: groundTexture } );
+
+        var mesh = new THREE.Mesh( new THREE.PlaneGeometry( 1174, 855 ), groundMaterial );
+        mesh.position.y = 0;
+        mesh.position.z = 0;
+        scene.add(mesh);
+       /* var st =staticText("中");
+        st.position.set(100,0,10);
+        scene.add(st);*/
+        var stations = [];
+        stationData.forEach(function(station){
+            //console.log(station.position[0],station.position[1]);
+            var text = staticText(station.name);
+            var st = new THREE.Vector3(station.position[0],station.position[1],0);
+            text.position.set(station.position[0],station.position[1],10);
+            //console.log(text);
+            scene.add(text);
+            stations[station.name] = st;
+            titles.push(station.name);
+        });
+        var normalizer = new ESmile.Normalizer(flowdata, "amount", "linear",
+                { min:0, max:20  });
+
+        flowdata.forEach(function(data){
+
+            if(typeof(data.amount)=="string") {
+                data.amount = parseFloat(data.amount);
+            }
+            var curve = new ESmile.GlowCurve({from:data.from,to:data.to,start:stations[data.from],end:stations[data.to],withGlowPoint:false,amount:data.amount,normalizerCount:normalizer.normalize(data.amount),speed:10,
+                pointCloudSize:30,color:0x008B00,pointCloudColor:0x4d4dff});
+            curve.setVisible(false);
+            curves.push(curve);
+
+            chart._graphic.addChild(curve);
+        });
+        function graphicToScene(graphicObject, scene) {
+            /*console.log("****************************");
+            console.log(graphicObject.root);*/
+
+            scene.add(graphicObject.root);
+            for (var i = 0, length = graphicObject.children.length; i < length; i++) {
+                graphicToScene(graphicObject.children[i], scene);
+            }
+        };
+
+
+        graphicToScene(chart._graphic, scene );
+        addLegend();
+        $('[data-toggle="switch"]').bootstrapSwitch("onSwitchChange",switchChange);
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( 0x000000);
+        renderer.setSize( window.innerWidth,  window.innerHeight );
+        renderer.sortObjects = false;
+        container.appendChild(renderer.domElement);
+        /*var ec = new ESmile.EventCenter(chart, renderer.domElement);*/
+        var _control = new THREE.OrbitControls(camera, renderer.domElement);
+
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        document.addEventListener( 'click', onDocumentMouseClick, false );
+        //
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+    }
+
+    function switchChange(event){
+
+        var x = event.target;
+
+        if($(x).bootstrapSwitch("state")){
+            selection[x.getAttribute("data")] = 1;
+            curves.forEach(function(curve){
+                        if(curve.from == x.getAttribute("data")) {
+                            curve.changeColor(0xffffff,0x4d4dff);
+                            curve.setVisible(true);
+                            curve.setName("出口");
+                        }
+                        if(curve.to == x.getAttribute("data")) {
+                            curve.changeColor(0xffffff,0xB3EE3A);
+                            curve.setVisible(true);
+                            curve.setName("进口");
+                        }
+                    });
+        }else{
+            selection[x.getAttribute("data")] = 0;
+
+            curves.forEach(function(curve){
+                if(curve.from == x.getAttribute("data")) {
+                    if(selection[curve.to]!=1){
+                        curve.setVisible(false);
+                        curve.setName("");
+                    }else{
+                        curve.changeColor(0xffffff,0xB3EE3A);
+                        curve.setVisible(true);
+                        curve.setName("进口");
+                    }
+                }
+                if(curve.to == x.getAttribute("data")) {
+                    if(selection[curve.from]!=1){
+                        curve.setVisible(false);
+                        curve.setName("");
+                    }else{
+                        curve.changeColor(0xffffff,0x4d4dff);
+                        curve.setVisible(true);
+                        curve.setName("出口");
+                    }
+                }
+            });
+        }
+
+    }
+    function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    function onDocumentMouseMove( event ) {
+
+        event.preventDefault();
+
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+
+
+
+    }
+
+
+    function onDocumentMouseClick( event ) {
+
+        event.preventDefault();
+
+
+
+    }
+    //
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+        curves.forEach(function(curve){
+            curve._pointCloud.update();
+        });
+        render();
+
+
+    }
+    var count = 1;
+    function render() {
+
+        renderer.render( scene, chart._camera );
+    }
+    function staticText(text){
+        var canvas = document.createElement('canvas');
+
+
+        canvas.width = 150;
+        canvas.height = 120;
+        var context = canvas.getContext('2d');
+        context.fillStyle = "#ff0000"; // CHANGED
+        context.textAlign = "center";
+        context.font = "20px 微软雅黑";
+        context.fillText(text, canvas.width/2 , canvas.height/2);
+        context.strokeStyle = "#ff0000";
+        context.strokeText(text, canvas.width/2 , canvas.height/2);
+        var amap = new THREE.Texture(canvas,{ premultiplyAlpha:true });
+        amap.needsUpdate = true;
+
+        var mat = new THREE.SpriteMaterial({
+            map: amap,
+            transparent: false,
+            useScreenCoordinates: false
+            //color: 0xff0000 // CHANGED
+        });
+
+        var sp = new THREE.Sprite(mat);
+
+        sp.scale.set( 50,50, 2 );
+        return sp;
+    }
+
+    function addLegend(){
+
+        var checkBoxes=[];
+        var legendDiv = document.createElement("div");
+        legendDiv.className = "share mrl";
+        legendDiv.style.cssText="width:13%;position:absolute;right:0px;color:white;opacity:0.9;background: none;";
+        var ul = document.createElement("ul");
+        for(var i in titles){
+
+            var newText = document.createTextNode(titles[i]);
+            //var flag = document.createElement("div");
+            var label = document.createElement("label");
+            label.className="share-label";
+            label.setAttribute("for","share-toggle2");
+            var checkBox = document.createElement("input");
+            checkBox.type = "checkbox";
+            checkBox.setAttribute("data-toggle","switch");
+            checkBox.setAttribute("data",titles[i]);
+
+            var line = document.createElement("li");
+            line.style.cssText = "cursor:pointer;height:20px;padding-top:0px;margin-top:5px;";
+            line.setAttribute("data-chart-name", titles[i]);
+            //line.setAttribute("data-chart-color", new THREE.Color(flags[i]).getStyle());
+            line.setAttribute("data-chart-select","on");
+            //line.className = "ESmile_Legend_div";
+           /* flag.style.background =  new THREE.Color(flags[i]).getStyle();
+            flag.className = "ESmile_Legend_flag";*/
+
+           /* if( typeof(this._titleStyle)=="string"){
+                title.className = "ESmile_Legend_title";
+
+            }else{
+                var s = "";
+                for(var i in this._titleStyle){
+                    s += i+":"+this._titleStyle[i]+";";
+                }
+                title.style.cssText= s;
+            }*/
+
+            label.appendChild(newText);
+           // line.appendChild(flag);
+            line.appendChild(label);
+            line.appendChild(checkBox);
+
+
+            checkBoxes.push(checkBox);
+
+            ul.appendChild(line);
+        }
+        legendDiv.appendChild(ul);
+        container.appendChild(legendDiv);
+
+    }
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+p {
+        color: #454545;
+        font-size: 15px;
+        font-weight: normal;
+        color:blue;
+        margin-left: 40px;
+    }
+    
+#Context {
+        color: #454545;
+        font-size: 10px;
+        font-weight: normal;
+        color:ffffff;
+        margin-left: 40px;
+    }
+    
+a {
+        color: #454545;
+        font-size: 18px;
+        font-weight: normal;
+        color:blue;
+        margin-top: 20px;
+        margin-left: 40px;
+    }
